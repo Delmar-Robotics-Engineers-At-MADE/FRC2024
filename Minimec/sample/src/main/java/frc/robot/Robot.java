@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /** This is a demo program showing how to use Mecanum control with the MecanumDrive class. */
 public class Robot extends TimedRobot {
@@ -48,6 +51,9 @@ public class Robot extends TimedRobot {
     m_robotDrive = new MecanumDrive(frontLeft::set, rearLeft::set, frontRight::set, rearRight::set);
 
     m_stick = new Joystick(kJoystickChannel);
+
+    ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
+    driveBaseTab.add("Gyro", m_gyro.getAngle());
   }
 
   @Override
@@ -56,5 +62,8 @@ public class Robot extends TimedRobot {
     // movement, and Z axis for rotation.
     Rotation2d gyroRotation = new Rotation2d(Units.degreesToRadians(m_gyro.getAngle()));
     m_robotDrive.driveCartesian(-m_stick.getY(), -m_stick.getX(), -m_stick.getZ(), gyroRotation);
+    if (m_stick.getRawButton(1)) {
+      m_gyro.reset();
+    }
   }
 }
