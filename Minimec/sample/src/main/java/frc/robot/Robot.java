@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
     m_stick = new Joystick(kJoystickChannel);
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
-    driveBaseTab.add("Gyro", m_gyro.getAngle());
+    driveBaseTab.add("Gyro", m_gyro);
   }
 
   @Override
