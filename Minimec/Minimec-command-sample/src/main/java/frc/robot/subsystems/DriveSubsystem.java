@@ -4,24 +4,29 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+// import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
-  private final PWMSparkMax m_frontLeft = new PWMSparkMax(DriveConstants.kFrontLeftMotorPort);
-  private final PWMSparkMax m_rearLeft = new PWMSparkMax(DriveConstants.kRearLeftMotorPort);
-  private final PWMSparkMax m_frontRight = new PWMSparkMax(DriveConstants.kFrontRightMotorPort);
-  private final PWMSparkMax m_rearRight = new PWMSparkMax(DriveConstants.kRearRightMotorPort);
+
+  private final Talon m_frontLeft = new Talon(DriveConstants.kFrontLeftMotorPort);
+  private final Talon m_rearLeft = new Talon(DriveConstants.kRearLeftMotorPort);
+  private final Talon m_frontRight = new Talon(DriveConstants.kFrontRightMotorPort);
+  private final Talon m_rearRight = new Talon(DriveConstants.kRearRightMotorPort);
 
   private final MecanumDrive m_drive =
       new MecanumDrive(m_frontLeft::set, m_rearLeft::set, m_frontRight::set, m_rearRight::set);
@@ -55,7 +60,8 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightEncoderReversed);
 
   // The gyro sensor
-  private final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro();
+  // private final Gyro m_gyro = new ADXRS450_Gyro();
+  private final AHRS m_gyro = new AHRS(SPI.Port.kMXP, (byte) 200);
 
   // Odometry class for tracking robot pose
   MecanumDriveOdometry m_odometry =
@@ -70,7 +76,7 @@ public class DriveSubsystem extends SubsystemBase {
     SendableRegistry.addChild(m_drive, m_rearLeft);
     SendableRegistry.addChild(m_drive, m_frontRight);
     SendableRegistry.addChild(m_drive, m_rearRight);
-
+    
     // Sets the distance per pulse for the encoders
     m_frontLeftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
     m_rearLeftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
