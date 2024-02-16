@@ -14,6 +14,10 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -57,6 +61,16 @@ public class RobotContainer {
                     -m_driverController.getRightX(),
                     true),
             m_robotDrive));
+
+    ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
+    driveBaseTab.add("Mecanum Drive", m_robotDrive);
+    // Put both encoders in a list layout
+    ShuffleboardLayout encoders =
+        driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(0, 0).withSize(4, 2);
+    encoders.add("Front Left Encoder", m_robotDrive.getFrontLeftEncoder());
+    encoders.add("Front Right Encoder", m_robotDrive.getFrontRightEncoder());
+    encoders.add("Rear Left Encoder", m_robotDrive.getRearLeftEncoder());
+    encoders.add("Rear Right Encoder", m_robotDrive.getRearRightEncoder());
   }
 
   /**
