@@ -66,7 +66,7 @@ public class RobotContainer {
     driveBaseTab.add("Mecanum Drive", m_robotDrive);
     // Put both encoders in a list layout
     ShuffleboardLayout encoders =
-        driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(0, 0).withSize(4, 2);
+        driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4);
     encoders.add("Front Left Encoder", m_robotDrive.getFrontLeftEncoder());
     encoders.add("Front Right Encoder", m_robotDrive.getFrontRightEncoder());
     encoders.add("Rear Left Encoder", m_robotDrive.getRearLeftEncoder());
@@ -84,8 +84,14 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
         .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
+
+    // reset gyro heading when green-A pressed
     new JoystickButton(m_driverController, Button.kA.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+
+    // reset encoders when yellow-Y pressed
+    new JoystickButton(m_driverController, Button.kY.value)
+        .onTrue(new InstantCommand(() -> m_robotDrive.resetEncoders()));
   }
 
   /**
