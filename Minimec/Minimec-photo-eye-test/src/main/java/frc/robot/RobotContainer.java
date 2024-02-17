@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -21,10 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants2.ArmConstants;
-import frc.robot.Commands.Arm.RunArmClosedLoop;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Photonvision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -40,9 +40,11 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+  private final DigitalInput m_photoEye = new DigitalInput(9);
+
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Photonvision m_photonVision = new Photonvision()
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -63,10 +65,8 @@ public class RobotContainer {
                     m_driverController.getLeftY(),
                     -m_driverController.getLeftX(),
                     -m_driverController.getRightX(),
-                    true, false),
+                    true),
             m_robotDrive));
-
-    /////////////// Dashboard Stuff //////////
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
     driveBaseTab.add("Mecanum Drive", m_robotDrive);
@@ -78,13 +78,11 @@ public class RobotContainer {
     encoders.add("Rear Left Encoder", m_robotDrive.getRearLeftEncoder());
     encoders.add("Rear Right Encoder", m_robotDrive.getRearRightEncoder());
 
-    ShuffleboardLayout photonDash =
-        driveBaseTab.getLayout("Photon Vision", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 2);
-    photonDash.add("Yaw", pCam.objYaw());
-    encoders.add("Front Right Encoder", m_robotDrive.getFrontRightEncoder());
-    encoders.add("Rear Left Encoder", m_robotDrive.getRearLeftEncoder());
-    encoders.add("Rear Right Encoder", m_robotDrive.getRearRightEncoder());
-    }
+    ShuffleboardLayout eyes =
+        driveBaseTab.getLayout("Photo Eyes", BuiltInLayouts.kList).withPosition(4, 0).withSize(1, 1);
+    eyes.add("Eye 9", m_photoEye);
+
+  }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -105,13 +103,6 @@ public class RobotContainer {
     // reset encoders when yellow-Y pressed
     new JoystickButton(m_driverController, Button.kY.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.resetEncoders()));
-
-    // run test command when blue-X pressed
-    new JoystickButton(m_driverController, Button.kX.value)
-        .onTrue(new AutoIntake(m_robotDrive, null, , Arm ar));
-
-    m_operatorController.a().onTrue(new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos));
-
   }
 
   /**
@@ -169,6 +160,6 @@ public class RobotContainer {
     return Commands.sequence(
         new InstantCommand(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())),
         mecanumControllerCommand,
-        new InstantCommand(() -> m_robotDrive.drive(0, 0, 0, false, false)));
+        new InstantCommand(() -> m_robotDrive.drive(0, 0, 0, false)));
   }
 }
