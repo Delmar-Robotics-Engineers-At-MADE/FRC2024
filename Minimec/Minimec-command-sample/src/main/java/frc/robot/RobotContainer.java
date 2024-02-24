@@ -64,6 +64,8 @@ public class RobotContainer {
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
     driveBaseTab.add("Mecanum Drive", m_robotDrive);
+    driveBaseTab.add("Gyro", m_robotDrive.m_gyro);
+
     // Put both encoders in a list layout
     ShuffleboardLayout encoders =
         driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4);
