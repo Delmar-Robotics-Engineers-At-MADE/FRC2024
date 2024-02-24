@@ -46,7 +46,7 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
-    public static final int kEncoderCPR = 1024;
+    public static final int kEncoderCPR = 74;
     public static final double kWheelDiameterMeters = 0.10;
     public static final double kEncoderDistancePerPulse =
         // Assumes the encoders are directly mounted on the wheel shafts
