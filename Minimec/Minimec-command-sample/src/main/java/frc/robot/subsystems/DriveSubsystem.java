@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
@@ -16,7 +15,6 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.util.sendable.SendableRegistry;
 // import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Constants.DriveConstants;
 //import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
@@ -29,8 +27,8 @@ class myAHRS extends AHRS {
         return Rotation2d.fromDegrees(getAngle()-180);
   }
 
-  public myAHRS(I2C.Port i2c_port_id, byte update_rate_hz) {
-     super(i2c_port_id, update_rate_hz);
+  public myAHRS(SPI.Port kmxp, byte update_rate_hz) {
+     super(kmxp, update_rate_hz);
   }
 }
 
@@ -74,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   // private final Gyro m_gyro = new ADXRS450_Gyro();
-  public final AHRS m_gyro = new AHRS(SPI.Port.kMXP, (byte) 200);
+  public final myAHRS m_gyro = new myAHRS(SPI.Port.kMXP, (byte) 200);
 
   // Odometry class for tracking robot pose
   MecanumDriveOdometry m_odometry =
