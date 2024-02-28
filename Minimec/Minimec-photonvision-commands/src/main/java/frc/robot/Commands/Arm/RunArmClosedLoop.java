@@ -9,16 +9,12 @@ import frc.robot.Constants2.ArmConstants;
 import frc.robot.subsystems.Arm;
 
 public class RunArmClosedLoop extends Command {
-  private Arm arm;
-  private double setpoint;
-  private boolean end;
+
+  
   /** Creates a new RunArmClosedLoop. */
   public RunArmClosedLoop(Arm ar, double target) {
-    arm = ar;
-    setpoint = target;
-    end = false;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(ar);
+
+    
   }
 
   // Called when the command is initially scheduled.
@@ -28,12 +24,7 @@ public class RunArmClosedLoop extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(Math.abs(arm.getPos() - setpoint) <= ArmConstants.kTolearance) {
-      end = true;
-    }
-    else {
-    arm.runToPosition(setpoint);
-    }
+
   }
 
   // Called once the command ends or is interrupted.
@@ -43,6 +34,6 @@ public class RunArmClosedLoop extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return end;
+    return true;
   }
 }

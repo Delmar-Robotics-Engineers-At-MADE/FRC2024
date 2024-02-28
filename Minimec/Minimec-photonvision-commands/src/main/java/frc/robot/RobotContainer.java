@@ -82,8 +82,12 @@ public class RobotContainer {
 
     ShuffleboardLayout photonDash =
         driveBaseTab.getLayout("Photon Vision", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 2);
-    photonDash.addNumber("Yaw", () -> m_photonVision.objYaw());
+    photonDash.addNumber("Yaw", () -> photonObjYaw());
     }
+
+  private double photonObjYaw() {
+    return m_photonVision.isObj() ? m_photonVision.objYaw() : 0.0;
+  }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
