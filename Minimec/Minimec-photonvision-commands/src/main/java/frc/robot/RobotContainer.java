@@ -111,7 +111,7 @@ public class RobotContainer {
 
     // run test command when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
-        .onTrue(new AutoIntake(m_robotDrive, null, m_photonVision, null));
+        .whileTrue(new AutoIntake(m_robotDrive, null, m_photonVision, null));
 
   }
 

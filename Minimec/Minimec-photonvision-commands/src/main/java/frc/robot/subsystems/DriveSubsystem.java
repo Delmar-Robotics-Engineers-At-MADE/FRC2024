@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
@@ -25,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 class myAHRS extends AHRS {
   @Override
   public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getAngle()-180);
+        return Rotation2d.fromDegrees(getAngle());
   }
 
-  public myAHRS(SPI.Port i2c_port_id, byte update_rate_hz) {
-     super(i2c_port_id, update_rate_hz);
+  public myAHRS(SPI.Port kmxp, byte update_rate_hz) {
+     super(kmxp, update_rate_hz);
   }
 }
 
@@ -73,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   // private final Gyro m_gyro = new ADXRS450_Gyro();
-  private final myAHRS m_gyro = new myAHRS(SPI.Port.kMXP, (byte) 200);
+  public final myAHRS m_gyro = new myAHRS(SPI.Port.kMXP, (byte) 200);
 
   // Odometry class for tracking robot pose
   MecanumDriveOdometry m_odometry =
@@ -97,8 +96,8 @@ public class DriveSubsystem extends SubsystemBase {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_frontRight.setInverted(true);
-    m_rearRight.setInverted(true);
+    m_frontLeft.setInverted(true);
+    m_rearLeft.setInverted(true);
   }
 
   @Override
@@ -133,9 +132,9 @@ public class DriveSubsystem extends SubsystemBase {
    * @param ySpeed Speed of the robot in the y direction (sideways).
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
-   * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+    if (Math.abs(xSpeed) > 0.1 || Math.abs(ySpeed) > 0.1) {System.out.println("MJS: drive " + xSpeed + " "+ ySpeed + " "+ rot );}
     if (fieldRelative) {
       m_drive.driveCartesian(xSpeed, ySpeed, rot, m_gyro.getRotation2d());
     } else {

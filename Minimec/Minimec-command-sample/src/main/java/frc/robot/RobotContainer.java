@@ -68,7 +68,7 @@ public class RobotContainer {
 
     // Put both encoders in a list layout
     ShuffleboardLayout encoders =
-        driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4);
+        driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 4);
     encoders.add("Front Left Encoder", m_robotDrive.getFrontLeftEncoder());
     encoders.add("Front Right Encoder", m_robotDrive.getFrontRightEncoder());
     encoders.add("Rear Left Encoder", m_robotDrive.getRearLeftEncoder());
@@ -116,7 +116,8 @@ public class RobotContainer {
             // Start at the origin facing the +X direction
             new Pose2d(0, 0, new Rotation2d(0)),
             // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+            // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+            List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
             // End 3 meters straight ahead of where we started, facing forward
             new Pose2d(3, 0, new Rotation2d(0)),
             config);
