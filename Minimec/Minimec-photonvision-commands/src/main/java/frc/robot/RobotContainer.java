@@ -83,10 +83,13 @@ public class RobotContainer {
     ShuffleboardLayout photonDash =
         driveBaseTab.getLayout("Photon Vision", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 2);
     photonDash.addNumber("Yaw", () -> photonObjYaw());
+    photonDash.addNumber("April #6 X", () -> m_photonVision.getTagData(6)[0]);
+    photonDash.addNumber("April #6 Y", () -> m_photonVision.getTagData(6)[1]);
+    photonDash.addNumber("April #6 Yaw", () -> m_photonVision.getTagData(6)[2]);
     }
 
   private double photonObjYaw() {
-    return m_photonVision.isObj() ? m_photonVision.objYaw() : 0.0;
+    return m_photonVision.isObj() ? m_photonVision.objYaw() : -1;
   }
 
   /**
