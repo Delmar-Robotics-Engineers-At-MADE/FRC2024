@@ -16,6 +16,8 @@ public class PIDDrive extends Command {
   private double x;
   private double y;
   private double yaw;
+  private final double cameraOffset;
+  private final double cameraDepth;
 
   private static ProfiledPIDController yawPID = new ProfiledPIDController(
   DriveConstants.kYawP, DriveConstants.kYawI, DriveConstants.kYawD,
@@ -36,6 +38,20 @@ public class PIDDrive extends Command {
                 DriveConstants.kMaxYawAccelerationDegPerSSquared)); 
 
   /** Creates a new VisionDrive. */
+
+  public PIDDrive(DriveSubsystem dt, double xErr, double yErr, double yawErr, double cameraOffset, double cameraDepth) {
+    x = xErr;
+    y = yErr;
+    yaw = yawErr;
+    this.cameraOffset = cameraOffset;
+    this.cameraDepth = cameraDepth;
+
+    drivetrain = dt;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(dt);
+  }
+
+
   public PIDDrive(DriveSubsystem dt, double xErr, double yErr, double yawErr) {
 
     yawPID.setTolerance(DriveConstants.kYawToleranceDeg);
@@ -43,6 +59,9 @@ public class PIDDrive extends Command {
     x = xErr;
     y = yErr;
     yaw = yawErr;
+
+    this.cameraOffset = 0.0;
+    this.cameraDepth = 0.0;
 
     drivetrain = dt;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -52,6 +71,9 @@ public class PIDDrive extends Command {
   public PIDDrive(DriveSubsystem dt) {
     yawPID.setTolerance(DriveConstants.kYawToleranceDeg);
     drivetrain = dt;
+
+    this.cameraOffset = 0.0;
+    this.cameraDepth = 0.0;
   }
 
   public void setValues(double xErr, double yErr, double yawErr) {
