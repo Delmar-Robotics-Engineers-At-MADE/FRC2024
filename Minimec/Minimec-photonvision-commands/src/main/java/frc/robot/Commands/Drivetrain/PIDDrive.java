@@ -12,7 +12,7 @@ import frc.robot.Constants2.PIDDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class PIDDrive extends Command {
-  private DriveSubsystem drivetrain;
+  private final DriveSubsystem drivetrain;
   private double x;
   private double y;
   private double yaw;
@@ -38,42 +38,25 @@ public class PIDDrive extends Command {
                 DriveConstants.kMaxYawAccelerationDegPerSSquared)); 
 
   /** Creates a new VisionDrive. */
-
   public PIDDrive(DriveSubsystem dt, double xErr, double yErr, double yawErr, double cameraOffset, double cameraDepth) {
     x = xErr;
     y = yErr;
     yaw = yawErr;
     this.cameraOffset = cameraOffset;
     this.cameraDepth = cameraDepth;
+    yawPID.setTolerance(DriveConstants.kYawToleranceDeg);
+    latPID.setTolerance(DriveConstants.kLatToleranceMeter);
+    longPID.setTolerance(DriveConstants.kLongToleranceMeter);
 
     drivetrain = dt;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(dt);
   }
 
-
-  public PIDDrive(DriveSubsystem dt, double xErr, double yErr, double yawErr) {
-
-    yawPID.setTolerance(DriveConstants.kYawToleranceDeg);
-
-    x = xErr;
-    y = yErr;
-    yaw = yawErr;
-
-    this.cameraOffset = 0.0;
-    this.cameraDepth = 0.0;
-
+  public PIDDrive(DriveSubsystem dt, double cameraOffset, double cameraDepth) {
     drivetrain = dt;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(dt);
-  }
-
-  public PIDDrive(DriveSubsystem dt) {
-    yawPID.setTolerance(DriveConstants.kYawToleranceDeg);
-    drivetrain = dt;
-
-    this.cameraOffset = 0.0;
-    this.cameraDepth = 0.0;
+    this.cameraOffset = cameraOffset;
+    this.cameraDepth = cameraDepth;
   }
 
   public void setValues(double xErr, double yErr, double yawErr) {
@@ -90,8 +73,8 @@ public class PIDDrive extends Command {
   @Override
   public void execute() {
     System.out.println("MJS: executing PIDDrive: " + latPID.calculate(x, PIDDriveConstants.latGoal) + " " + longPID.calculate(y, PIDDriveConstants.longGoal) + " " + yawPID.calculate(yaw, PIDDriveConstants.yawGoal));
-    drivetrain.drive(latPID.calculate(x, PIDDriveConstants.latGoal),
-    longPID.calculate(y, PIDDriveConstants.longGoal),
+    drivetrain.drive(latPID.calculate(x + cameraOffset, PIDDriveConstants.latGoal),
+    longPID.calculate(y + cameraDepth, PIDDriveConstants.longGoal),
     yawPID.calculate(yaw, PIDDriveConstants.yawGoal), 
     false, 
     true);
@@ -117,3 +100,27 @@ public class PIDDrive extends Command {
     return false;
   }
 }
+
+
+
+
+  // // Called every time the scheduler runs while the command is scheduled.
+  // @Override
+  // public void execute() {
+  //   System.out.println("MJS: executing PIDDrive: " + latPID.calculate(x, PIDDriveConstants.latGoal) + " " + longPID.calculate(y, PIDDriveConstants.longGoal) + " " + yawPID.calculate(yaw, PIDDriveConstants.yawGoal));
+  //   drivetrain.drive(latPID.calculate(x, PIDDriveConstants.latGoal),
+  //   longPID.calculate(y, PIDDriveConstants.longGoal),
+  //   yawPID.calculate(yaw, PIDDriveConstants.yawGoal), 
+  //   false, 
+  //   true);
+  // }
+
+  // public boolean atGoal() {
+  //   if(latPID.atGoal() && longPID.atGoal() && yawPID.atGoal()) {
+  //     return true;
+  //   }
+  //   else {
+  //     System.out.println("MJS: PIDDrive: not at goal: " + latPID.atGoal() + " " + longPID.atGoal() + " " + yawPID.atGoal() + " " + yawPID.getPositionError() + " " + yawPID.getPositionTolerance());
+  //     return false;
+  //   }
+  // }

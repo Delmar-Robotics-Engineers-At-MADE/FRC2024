@@ -23,9 +23,13 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants2.ArmConstants;
 import frc.robot.Commands.Arm.RunArmClosedLoop;
+import frc.robot.Commands.Drivetrain.AutoFire3D;
 import frc.robot.Commands.Drivetrain.AutoIntake;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Photonvision;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -45,6 +49,9 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Photonvision m_photonVision = new Photonvision(NetworkTableInstance.getDefault());
+  private final Arm m_arm = new Arm(0, 0);
+  private final Intake m_intake = new Intake(0, 0);
+  private final Shooter m_shooter = new Shooter(0, 0);
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -62,9 +69,9 @@ public class RobotContainer {
         new RunCommand(
             () ->
                 m_robotDrive.drive(
-                    m_driverController.getLeftY(),
-                    -m_driverController.getLeftX(),
-                    -m_driverController.getRightX(),
+                    -m_driverController.getLeftY(),
+                    m_driverController.getLeftX(),
+                    m_driverController.getRightX()/2,
                     true, false),
             m_robotDrive));
 
@@ -72,6 +79,8 @@ public class RobotContainer {
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
     driveBaseTab.add("Mecanum Drive", m_robotDrive);
+    driveBaseTab.add("Gyro", m_robotDrive.m_gyro);
+
     // Put both encoders in a list layout
     ShuffleboardLayout encoders =
         driveBaseTab.getLayout("Encoders", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4);
@@ -83,9 +92,9 @@ public class RobotContainer {
     ShuffleboardLayout photonDash =
         driveBaseTab.getLayout("Photon Vision", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 2);
     photonDash.addNumber("Yaw", () -> photonObjYaw());
-    photonDash.addNumber("April #6 X", () -> m_photonVision.getTagData(6)[0]);
-    photonDash.addNumber("April #6 Y", () -> m_photonVision.getTagData(6)[1]);
-    photonDash.addNumber("April #6 Yaw", () -> m_photonVision.getTagData(6)[2]);
+    photonDash.addNumber("April #6 X", () -> m_photonVision.get3DTagData(6)[0]);
+    photonDash.addNumber("April #6 Y", () -> m_photonVision.get3DTagData(6)[1]);
+    photonDash.addNumber("April #6 Yaw", () -> m_photonVision.get3DTagData(6)[2]);
     }
 
   private double photonObjYaw() {
@@ -115,6 +124,11 @@ public class RobotContainer {
     // run test command when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
         .whileTrue(new AutoIntake(m_robotDrive, null, m_photonVision, null));
+
+    // run test command when red-B pressed
+    new JoystickButton(m_driverController, Button.kB.value)
+        .whileTrue(new AutoFire3D(m_robotDrive, m_photonVision, 6, 
+        m_arm, m_intake, m_shooter, 0.0, 0.0));
 
   }
 

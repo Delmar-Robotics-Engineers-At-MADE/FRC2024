@@ -5,6 +5,7 @@
 package frc.robot.Commands.Drivetrain;
 
 import frc.robot.Constants2.OperatorConstants;
+import frc.robot.Constants2.VisionConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
@@ -17,7 +18,7 @@ public class AutoIntake extends PIDDrive {
   private boolean end;
   /** Creates a new AutoIntake. */
   public AutoIntake(DriveSubsystem dt, Intake in, Photonvision pv, Arm ar) {
-    super(dt);
+    super(dt, VisionConstants.kObjCamXOffset, 0.0);
     pCam = pv;
     end = false;
     drivetrain = dt;

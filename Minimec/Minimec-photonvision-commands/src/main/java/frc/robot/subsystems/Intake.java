@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 
-import edu.wpi.first.wpilibj.DigitalInput;
+// import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase{
@@ -9,12 +9,12 @@ public class Intake extends SubsystemBase{
      * Common wisdom says that the intake should run at 2x drive speed.
      */
 
-    private final DigitalInput optical;
+    // private final DigitalInput optical;
 
 
     public Intake(int intakeID, int sensorDIO) {
 
-        optical = new DigitalInput(sensorDIO);
+        // optical = new DigitalInput(sensorDIO);
     
     }
 
@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase{
     }
 
     public boolean isNote() {
-        return optical.get();
+        return false; // was optical.get();
     }
 
     
