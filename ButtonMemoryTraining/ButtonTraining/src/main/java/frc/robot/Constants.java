@@ -16,4 +16,40 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static enum Functions {
+    AMP,
+    SHOOT_DISTANCE,
+    INTAKE,
+    SHOOT_SUBWOOFER,
+    STARBOARD_CLIMBER_UP,
+    STARBOARD_CLIMBER_DOWN,
+    PORT_CLIMBER_UP,
+    PORT_CLIMBER_DOWN,
+    OVERRIDE,
+    HOME_CLIMBERS,
+    MANOEUVER_DRIVE,
+    ARM_UP,
+    FEED,
+    ARM_DOWN,
+    REVERSE;
+  }
+
+  public static final class FunctionList {
+    public static final String AMP = "Amp";
+    public static final String SHOOT_DISTANCE = "Shoot at Distance";
+    public static final String INTAKE = "Intake";
+    public static final String SHOOT_SUBWOOFER = "Shoot at SUBWOOFER";
+    public static final String STARBOARD_CLIMBER_UP = "Starboard Climber Up";
+    public static final String STARBOARD_CLIMBER_DOWN = "Starboard Climber Down";
+    public static final String PORT_CLIMBER_UP = "Port Climber Up";
+    public static final String PORT_CLIMBER_DOWN = "Port Climber Down";
+    public static final String OVERRIDE = "OVERIDE";
+    public static final String HOME_CLIMBERS = "Home Climbers";
+    public static final String MANOEUVER_DRIVE = "Drive Slow Speed";
+    public static final String ARM_UP = "Arm Up";
+    public static final String FEED = "Force Feed Note";
+    public static final String ARM_DOWN = "Arm Down";
+    public static final String REVERSE = "Force Reverse Note";
+  }
 }
