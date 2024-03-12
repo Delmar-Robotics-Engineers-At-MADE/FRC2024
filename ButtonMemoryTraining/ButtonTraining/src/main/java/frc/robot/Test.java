@@ -22,9 +22,6 @@ public class Test {
     this.scorekeeper = scorekeeper;
     current = "";
     correct = false;
-    Shuffleboard.getTab("test").addString("function", ()-> current);
-    Shuffleboard.getTab("test").addInteger("score", ()-> scorekeeper.getScore());
-    Shuffleboard.getTab("test").addBoolean("correct", ()-> correct);
   }
 
   public Command activate() {
@@ -40,9 +37,23 @@ public class Test {
     if(current == controller.getActiveFunction()) {
       scorekeeper.add();
       correct = true;
+      System.out.println("correct");
     }
     else {
       correct = false;
+      System.out.println("incorrect");
     }
+  }
+
+  public String getTask() {
+    return current;
+  }
+
+  public int getScore() {
+    return scorekeeper.getScore();
+  }
+
+  public boolean isCorrect() {
+    return correct;
   }
 }

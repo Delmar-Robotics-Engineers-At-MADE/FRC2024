@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.Constants.OperatorConstants;
 
 
@@ -23,15 +25,17 @@ public class RobotContainer {
       new StringXboxController(OperatorConstants.kDriverControllerPort);
   private final Scorekeeper scorekeeper = new Scorekeeper();
   private final Test test = new Test(controller, scorekeeper);
+  private final CommandJoystick keyboard = new CommandJoystick(5);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    keyboard.button(1).onTrue(
       new ParallelDeadlineGroup(new WaitCommand(150),
       new ParallelRaceGroup(
         new WaitCommand(3),
         test.activate()
-      )
-     );
+      ).repeatedly()
+     ));
   }
 
 }
