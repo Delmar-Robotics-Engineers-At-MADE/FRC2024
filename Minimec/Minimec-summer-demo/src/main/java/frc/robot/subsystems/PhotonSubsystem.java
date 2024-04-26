@@ -50,6 +50,9 @@ public class PhotonSubsystem extends SubsystemBase {
       m_bestHeight = top - bottom;
       m_bestWidth = right - left;
       m_bestAspect = (m_bestWidth > 0) ? m_bestHeight / m_bestWidth : 0;
+
+      // give aspect a sign according to which side of center the target is on
+      if (m_bestYaw > 0) {m_bestAspect *= -1;}
     }
     return m_hasTarget;
   }
@@ -57,6 +60,7 @@ public class PhotonSubsystem extends SubsystemBase {
   public double getYaw() { return m_bestYaw; }
   public double getPitch() { return m_bestPitch; }
   public double getHeight() { return m_bestHeight; }
+  public double getWidth() { return m_bestWidth; }
   public double getAspect() { return m_bestAspect; }
   public boolean hasTarget() { return m_hasTarget; }
 

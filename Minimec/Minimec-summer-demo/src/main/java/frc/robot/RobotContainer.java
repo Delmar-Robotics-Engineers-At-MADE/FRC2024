@@ -22,6 +22,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DistanceToNote;
+import frc.robot.commands.StrafeToNote;
 import frc.robot.commands.TurnToNoteProfiled;
 import frc.robot.commands.UpdateBestPhotonCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -93,6 +94,7 @@ public class RobotContainer {
     photonTab.addNumber("Yaw", () -> m_photon.getYaw());
     photonTab.addNumber("Aspect", () -> m_photon.getAspect());
     photonTab.addNumber("Height", () -> m_photon.getHeight());
+    photonTab.addNumber("Width", () -> m_photon.getWidth());
 
   }
 
@@ -122,7 +124,7 @@ public class RobotContainer {
 
     // distnace to note when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
-        .whileTrue(new RepeatCommand(new DistanceToNote(DriveConstants.kDriveSetpoint, m_photon, m_robotDrive)));
+        .whileTrue(new RepeatCommand(new StrafeToNote(m_photon, m_robotDrive)));
 
     // rotate to note when red-B pressed
     new JoystickButton(m_driverController, Button.kB.value)

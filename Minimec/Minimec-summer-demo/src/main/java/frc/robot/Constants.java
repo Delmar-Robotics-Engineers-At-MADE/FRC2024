@@ -81,6 +81,12 @@ public final class Constants {
     public static final double kDriveToleranceDist = 10;
     public static final double kDriveSetpoint = 300;
 
+    // strafe to Note
+    public static final double kStrafeP = 0.7;
+    public static final double kStrafeI = 0.0;
+    public static final double kStrafeD = 0.0;
+    public static final double kStrafeToleranceAspect = 0.1;
+
 
   }
 
