@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.TurnToNoteProfiled;
 import frc.robot.commands.UpdateBestPhotonCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 
@@ -46,6 +48,12 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+
+  // sequences for summer demos
+//   private final SequentialCommandGroup m_cmdTurnToNote = new SequentialCommandGroup(
+//     new UpdateBestPhotonCommand(m_photon),
+//     new TurnToNoteProfiled(m_photon, m_robotDrive)
+//   );
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -83,6 +91,7 @@ public class RobotContainer {
     photonTab.addNumber("Pitch", () -> m_photon.getPitch());
     photonTab.addNumber("Yaw", () -> m_photon.getYaw());
     photonTab.addNumber("Aspect", () -> m_photon.getAspect());
+    photonTab.addNumber("Height", () -> m_photon.getHeight());
 
   }
 
@@ -106,9 +115,13 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kY.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.resetEncoders()));
 
-    // update info from photon  when blue-X pressed
+    // update info from photon when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
-    .whileTrue(new RepeatCommand(new UpdateBestPhotonCommand(m_photon)));
+        .whileTrue(new RepeatCommand(new UpdateBestPhotonCommand(m_photon)));
+
+    // rotate to note when red-B pressed
+    new JoystickButton(m_driverController, Button.kB.value)
+        .whileTrue(new RepeatCommand(new TurnToNoteProfiled(m_photon, m_robotDrive)));
 
   }
 

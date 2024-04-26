@@ -65,13 +65,13 @@ public final class Constants {
     public static final double kPFrontRightVel = 0.5;
     public static final double kPRearRightVel = 0.5;
 
-    public static final double kTurnP = 0.3;
+    public static final double kTurnP = 0.035;
     public static final double kTurnI = 0;
-    public static final double kTurnD = 0.01;    
+    public static final double kTurnD = 0.001;    
 
-    public static final double kMaxTurnRateDegPerS = 25;
+    public static final double kMaxTurnRateDegPerS = 180;
     public static final double kMaxTurnAccelerationDegPerSSquared = 300;
-    public static final double kTurnToleranceDeg = 1;
+    public static final double kTurnToleranceDeg = 5;
     public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
 
 

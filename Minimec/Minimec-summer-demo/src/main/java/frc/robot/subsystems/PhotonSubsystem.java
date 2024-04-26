@@ -40,11 +40,13 @@ public class PhotonSubsystem extends SubsystemBase {
       List <TargetCorner> corners = target.getMinAreaRectCorners();
       double top = 0.0, left = 0.0, right = 0.0, bottom = 0.0;
       for (TargetCorner corner : corners) {
-        top = Math.max(top, corner.y);
-        bottom = Math.min(bottom, corner.y);
-        right = Math.max(right, corner.x);
-        left = Math.min(left, corner.x);
+        // System.out.println(corner.x + " " + corner.y+ " ");
+        top = (top == 0) ? corner.y : Math.max(top, corner.y);
+        bottom = (bottom == 0) ? corner.y : Math.min(bottom, corner.y);
+        right = (right == 0) ? corner.x : Math.max(right, corner.x);
+        left = (left == 0) ? corner.x : Math.min(left, corner.x);
       }
+      // System.out.println("top, bottom, right, left: " + top + " " + bottom + " " + right + " " + left);
       m_bestHeight = top - bottom;
       m_bestWidth = right - left;
       m_bestAspect = (m_bestWidth > 0) ? m_bestHeight / m_bestWidth : 0;
@@ -54,6 +56,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
   public double getYaw() { return m_bestYaw; }
   public double getPitch() { return m_bestPitch; }
+  public double getHeight() { return m_bestHeight; }
   public double getAspect() { return m_bestAspect; }
   public boolean hasTarget() { return m_hasTarget; }
 

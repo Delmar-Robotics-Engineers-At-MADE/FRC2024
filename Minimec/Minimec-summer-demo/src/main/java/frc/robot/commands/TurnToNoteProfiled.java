@@ -24,12 +24,9 @@ public class TurnToNoteProfiled extends ProfiledPIDCommand {
                 DriveConstants.kMaxTurnAccelerationDegPerSSquared));
 
   private static boolean m_shuffleboardLoaded = false;
-  /**
-   * Turns to robot to the specified angle using a motion profile.
-   *
-   * @param targetAngleDegrees The angle to turn to
-   * @param drive The drive subsystem to use
-   */
+  private PhotonSubsystem m_photon;
+
+  // constructor
   public TurnToNoteProfiled(PhotonSubsystem photon, DriveSubsystem drive) {
     super(
         m_PID,
@@ -38,9 +35,11 @@ public class TurnToNoteProfiled extends ProfiledPIDCommand {
         // Set reference to target
         0.0,
         // Pipe output to turn robot
-        (output, setpoint) -> drive.drive(0, 0, output, true),
+        (output, setpoint) -> drive.drive(0, 0, -output, true),
         // Require the drive
         drive);
+
+    m_photon = photon;
 
     // Set the controller to be continuous (because it is an angle controller)
     getController().enableContinuousInput(-180, 180);
@@ -60,8 +59,15 @@ public class TurnToNoteProfiled extends ProfiledPIDCommand {
   }
 
   @Override
+  public void execute() {
+    m_photon.UpdateTarget();
+    super.execute();
+  }  
+
+  @Override
   public boolean isFinished() {
     // End when the controller is at the reference.
-    return getController().atGoal();
+    return getController().atGoal() || !m_photon.hasTarget(); // end if we are at goal, or if we lost target
   }
+
 }
