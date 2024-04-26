@@ -65,14 +65,21 @@ public final class Constants {
     public static final double kPFrontRightVel = 0.5;
     public static final double kPRearRightVel = 0.5;
 
+    // turn to Note
     public static final double kTurnP = 0.035;
     public static final double kTurnI = 0;
     public static final double kTurnD = 0.001;    
-
     public static final double kMaxTurnRateDegPerS = 180;
     public static final double kMaxTurnAccelerationDegPerSSquared = 300;
     public static final double kTurnToleranceDeg = 5;
     public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
+
+    // distance to Note
+    public static final double kDriveP = 0.006;
+    public static final double kDriveI = 0.0;
+    public static final double kDriveD = 0.0001;
+    public static final double kDriveToleranceDist = 10;
+    public static final double kDriveSetpoint = 300;
 
 
   }

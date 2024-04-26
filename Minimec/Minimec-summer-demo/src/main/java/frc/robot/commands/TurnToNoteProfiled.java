@@ -35,7 +35,7 @@ public class TurnToNoteProfiled extends ProfiledPIDCommand {
         // Set reference to target
         0.0,
         // Pipe output to turn robot
-        (output, setpoint) -> drive.drive(0, 0, -output, true),
+        (output, setpoint) -> drive.drive(0, 0, -output, false),
         // Require the drive
         drive);
 

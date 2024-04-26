@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.DistanceToNote;
 import frc.robot.commands.TurnToNoteProfiled;
 import frc.robot.commands.UpdateBestPhotonCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -68,9 +69,9 @@ public class RobotContainer {
         new RunCommand(
             () ->
                 m_robotDrive.drive(
-                    -m_driverController.getLeftY(),
-                    m_driverController.getLeftX(),
-                    m_driverController.getRightX(),
+                    -m_driverController.getLeftY()/2,
+                    m_driverController.getLeftX()/2,
+                    m_driverController.getRightX()/2,
                     true),
             m_robotDrive));
 
@@ -116,8 +117,12 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_robotDrive.resetEncoders()));
 
     // update info from photon when blue-X pressed
+    // new JoystickButton(m_driverController, Button.kX.value)
+    //     .whileTrue(new RepeatCommand(new UpdateBestPhotonCommand(m_photon)));
+
+    // distnace to note when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
-        .whileTrue(new RepeatCommand(new UpdateBestPhotonCommand(m_photon)));
+        .whileTrue(new RepeatCommand(new DistanceToNote(DriveConstants.kDriveSetpoint, m_photon, m_robotDrive)));
 
     // rotate to note when red-B pressed
     new JoystickButton(m_driverController, Button.kB.value)
