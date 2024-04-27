@@ -34,6 +34,8 @@ class myAHRS extends AHRS {
 
 public class DriveSubsystem extends SubsystemBase {
 
+  PhotonSubsystem m_photon;
+
   private final Talon m_frontLeft = new Talon(DriveConstants.kFrontLeftMotorPort);
   private final Talon m_rearLeft = new Talon(DriveConstants.kRearLeftMotorPort);
   private final Talon m_frontRight = new Talon(DriveConstants.kFrontRightMotorPort);
@@ -82,7 +84,9 @@ public class DriveSubsystem extends SubsystemBase {
           new MecanumDriveWheelPositions());
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public DriveSubsystem(PhotonSubsystem photon) {
+    m_photon = photon;
+
     SendableRegistry.addChild(m_drive, m_frontLeft);
     SendableRegistry.addChild(m_drive, m_rearLeft);
     SendableRegistry.addChild(m_drive, m_frontRight);
@@ -138,6 +142,15 @@ public class DriveSubsystem extends SubsystemBase {
       m_drive.driveCartesian(xSpeed, ySpeed, rot, m_gyro.getRotation2d());
     } else {
       m_drive.driveCartesian(xSpeed, ySpeed, rot);
+    }
+  }
+
+  public void turnOrStrafe(double speed) {
+    double aspect = m_photon.getAspect();
+    if (aspect > 0.8 && aspect < 1.2) {
+      drive(0, 0, speed, false);
+    } else {
+      drive(0, speed, 0, false);
     }
   }
 

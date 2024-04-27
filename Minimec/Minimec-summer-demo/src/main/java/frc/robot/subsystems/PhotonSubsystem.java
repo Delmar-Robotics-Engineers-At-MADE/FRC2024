@@ -51,8 +51,8 @@ public class PhotonSubsystem extends SubsystemBase {
       m_bestWidth = right - left;
       m_bestAspect = (m_bestWidth > 0) ? m_bestHeight / m_bestWidth : 0;
 
-      // give aspect a sign according to which side of center the target is on
-      if (m_bestYaw > 0) {m_bestAspect *= -1;}
+      // // give aspect a sign according to which side of center the target is on
+      // if (m_bestYaw > 0) {m_bestAspect *= -1;}
     }
     return m_hasTarget;
   }

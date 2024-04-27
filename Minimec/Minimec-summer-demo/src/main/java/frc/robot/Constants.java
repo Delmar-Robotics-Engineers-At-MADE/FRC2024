@@ -65,10 +65,12 @@ public final class Constants {
     public static final double kPFrontRightVel = 0.5;
     public static final double kPRearRightVel = 0.5;
 
-    // turn to Note
-    public static final double kTurnP = 0.035;
-    public static final double kTurnI = 0;
-    public static final double kTurnD = 0.001;    
+    // react to Note yaw
+    public static final double kYawP = 0.035;
+    public static final double kYawI = 0;
+    public static final double kYawD = 0.001;  
+    
+    // turn rate limits, only meaningful when error measurement is angle
     public static final double kMaxTurnRateDegPerS = 180;
     public static final double kMaxTurnAccelerationDegPerSSquared = 300;
     public static final double kTurnToleranceDeg = 5;
@@ -81,11 +83,11 @@ public final class Constants {
     public static final double kDriveToleranceDist = 10;
     public static final double kDriveSetpoint = 300;
 
-    // strafe to Note
-    public static final double kStrafeP = 0.7;
-    public static final double kStrafeI = 0.0;
-    public static final double kStrafeD = 0.0;
-    public static final double kStrafeToleranceAspect = 0.1;
+    // react to Note aspect
+    public static final double kAspectP = 0.8;
+    public static final double kAspectI = 0.0;
+    public static final double kAspectD = 0.0;
+    public static final double kToleranceAspect = 0.00001;
 
 
   }
