@@ -32,10 +32,11 @@ public class Dashboard extends SubsystemBase{
         Shuffleboard.getTab("climbers");
 
         Shuffleboard.getTab("match").addBoolean("capture", () -> intake.isNote());
-        Shuffleboard.getTab("match").addDouble("heading", () -> -drivetrain.getHeading()).withWidget("Gyro");
+        Shuffleboard.getTab("match").addDouble("heading", () -> 360-drivetrain.getHeading()).withWidget("Gyro");
         Shuffleboard.getTab("match").addBoolean("port homed", () -> port.isHomed());
         Shuffleboard.getTab("match").addBoolean("starboard homed", () -> starboard.isHomed());
         Shuffleboard.getTab("match").addBoolean("overheat", () -> !intake.isSafeTemp() || !shooter.isSafeTemp());
+        Shuffleboard.getTab("match").addCamera("05", "Microsoft_LifeCam_HD_3000", "10.80.77.56:5800");
 
 
         Shuffleboard.getTab("arm").addDouble("arm pos", () -> arm.getPos());
@@ -51,6 +52,7 @@ public class Dashboard extends SubsystemBase{
         Shuffleboard.getTab("intake").addBoolean("thermal safe", () -> intake.isSafeTemp());
         Shuffleboard.getTab("intake").addBoolean("left", ()-> intake.isLeft());
         Shuffleboard.getTab("intake").addBoolean("right", ()-> intake.isRight());
+        Shuffleboard.getTab("intake").addDouble("distance", intake::getRange);
         
         Shuffleboard.getTab("shooter").addDouble("top speed", () -> shooter.getTopVelocity());
         Shuffleboard.getTab("shooter").addDouble("bottom Speed", () -> shooter.getBottomVelocity());

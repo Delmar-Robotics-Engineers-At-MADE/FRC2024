@@ -46,6 +46,12 @@ public class Climber extends SubsystemBase {
         return homed;
     }
 
+    public void checkHomed() {
+        if(!limitSwitch.get()) {
+            homed = true;
+        }
+    }
+
     public void home() {
         if(limitSwitch.get()) {
             motor.set(ClimberConstants.kHomeSpeed);
@@ -69,7 +75,7 @@ public class Climber extends SubsystemBase {
 
     public void runInDirection(boolean up) {
         if(!isHomed()) {
-            motor.set(up ? ClimberConstants.kHomeSpeed : -ClimberConstants.kHomeSpeed);
+            motor.set(up ? -ClimberConstants.kHomeSpeed : ClimberConstants.kHomeSpeed);
             System.out.println("¡NOT HOMED! ¡OVEREXTEND POSSIBLE!");
         }
         else if (!limitSwitch.get() && !up) {
@@ -102,5 +108,11 @@ public class Climber extends SubsystemBase {
 
     public double getPos() {
         return encoder.getPosition();
+    }
+
+    @Override
+    public void periodic() {
+        checkHomed();
+        super.periodic();
     }
 }

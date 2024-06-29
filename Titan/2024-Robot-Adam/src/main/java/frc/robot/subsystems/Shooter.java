@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -7,9 +9,11 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Commands.Shooter.RunShooterAtVelocity;
+import frc.robot.Commands.Shooter.RunShooterEternal;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Utils.Toolkit;
 
 public class Shooter extends SubsystemBase{
     /* We should use velocity control to ensure consistant performance.
@@ -22,6 +26,7 @@ public class Shooter extends SubsystemBase{
     private final RelativeEncoder bottomEncoder;
     private final SparkPIDController topVelController;
     private final SparkPIDController bottomVelController;
+    private final boolean atSetpoint;
 
     public Shooter(int topRollerID, int bottomRollerID) {
         top = new CANSparkMax(topRollerID, MotorType.kBrushless);
@@ -63,7 +68,9 @@ public class Shooter extends SubsystemBase{
         bottomVelController.setFF(ShooterConstants.kFF);
         bottomVelController.setOutputRange(-ShooterConstants.kMaxRPM, ShooterConstants.kMaxRPM);
 
-        setDefaultCommand(new RunShooterAtVelocity(this, ShooterConstants.kIdleSpeed, false));
+        setDefaultCommand(new RunShooterEternal(this, ShooterConstants.kIdleSpeed, false));
+
+        atSetpoint = false;
     }
 
     public void runAtSpeed(double target) {
@@ -71,6 +78,63 @@ public class Shooter extends SubsystemBase{
         topVelController.setReference(target, ControlType.kVelocity);
         bottomVelController.setReference(target, ControlType.kVelocity);
         //System.out.println(setpoint + " " + top.getOutputCurrent());
+    }
+
+    public Command fire(double target) {
+        double setpoint = target * ShooterConstants.kCompenstion;
+        return(startEnd(()-> {
+            topVelController.setReference(setpoint, ControlType.kVelocity);
+            bottomVelController.setReference(setpoint, ControlType.kVelocity);
+            },
+            ()-> getDefaultCommand()));
+    }
+
+    public Command accelerate(double target) {
+        double setpoint = target * ShooterConstants.kCompenstion;
+        return run(()-> {
+            topVelController.setReference(setpoint, ControlType.kVelocity);
+            bottomVelController.setReference(setpoint, ControlType.kVelocity);
+            });
+    }
+
+    public BooleanSupplier v2(double target) {
+        double setpoint = target * ShooterConstants.kCompenstion;
+        if(Toolkit.isInTolarance(setpoint, getBottomVelocity(), ShooterConstants.kTolerance) && Toolkit.isInTolarance(setpoint, getTopVelocity(), ShooterConstants.kTolerance)) {
+            return ()-> true;
+        }
+        else {
+            return ()-> false;
+        }
+    }
+
+    public boolean isMin(double target) {
+        double setpoint = target * ShooterConstants.kCompenstion;
+        if(getBottomVelocity() > setpoint - ShooterConstants.kTolerance  && getTopVelocity() > setpoint - ShooterConstants.kTolerance) {
+            return true;
+            }
+            else {
+                return false;
+            }
+    }
+
+    public boolean isSubwooferSpeed() {
+        double setpoint = ShooterConstants.kSubwooferSpeed * ShooterConstants.kCompenstion;
+        if(getBottomVelocity() > setpoint - ShooterConstants.kTolerance  && getTopVelocity() > setpoint - ShooterConstants.kTolerance) {
+            return true;
+        }
+        else {
+                return false;
+        }
+    }
+
+    public boolean isShuttleSpeed() {
+        double setpoint = ShooterConstants.kShuttleSpeed * ShooterConstants.kCompenstion;
+        if(getBottomVelocity() > setpoint - ShooterConstants.kTolerance  && getTopVelocity() > setpoint - ShooterConstants.kTolerance) {
+            return true;
+        }
+        else {
+                return false;
+        }
     }
 
     public void runOpenLoop(double speed) {
@@ -113,6 +177,4 @@ public class Shooter extends SubsystemBase{
         }
     }
 
-
-    
 }

@@ -1,0 +1,65 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2323229944473133,
+        "y": 5.542358369484951
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.2523754350473784,
+        "y": 5.541229450368293
+      },
+      "isLocked": false,
+      "linkedName": "MidSubwoofer"
+    },
+    {
+      "anchor": {
+        "x": 2.604912892568107,
+        "y": 5.569955719489253
+      },
+      "prevControl": {
+        "x": 1.0842222599935514,
+        "y": 5.569955719489253
+      },
+      "nextControl": {
+        "x": 3.1862564205245776,
+        "y": 5.569955719489253
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.2323229944473133,
+        "y": 5.542358369484951
+      },
+      "prevControl": {
+        "x": 1.9760584956501208,
+        "y": 5.558968184569421
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "MidSubwoofer"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "MidSpeaker",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

@@ -28,7 +28,6 @@ public class RunArmClosedLoop extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("CMD init - running arm");
     end = false;
   }
 
@@ -36,7 +35,7 @@ public class RunArmClosedLoop extends Command {
   @Override
   public void execute() {
     if(Toolkit.isInTolarance(arm.getPos(), setpoint, ArmConstants.kTolearance)) {
-      System.out.println("Arm At Setpoint");
+
       end = true;
     }
     else {

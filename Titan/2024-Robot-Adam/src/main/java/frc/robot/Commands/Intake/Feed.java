@@ -5,7 +5,6 @@
 package frc.robot.Commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Intake;
 
 public class Feed extends Command {
@@ -21,7 +20,6 @@ public class Feed extends Command {
   @Override
   public void initialize() {
     intake.hiCurrent();
-    System.out.println("feed init");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +32,6 @@ public class Feed extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("feed end");
   }
 
   // Returns true when the command should end.

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -7,10 +9,12 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Commands.Intake.HoldIntake;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+
 
 public class Intake extends SubsystemBase{
     /*We need methods to intake and stop when note is detected, feed to shooter, reverse intake and feed manually.
@@ -23,6 +27,7 @@ public class Intake extends SubsystemBase{
     private final PIDController velPID;
     private final PIDController posPID;
     private final SimpleMotorFeedforward ff;
+    private final TimeOfFlight tof;
 
     public Intake(int intakeID, int portSensorDIO, int starboardSensorDIO) {
         intake = new CANSparkMax(intakeID, MotorType.kBrushless);
@@ -42,6 +47,9 @@ public class Intake extends SubsystemBase{
         ff = new SimpleMotorFeedforward(IntakeConstants.kS, IntakeConstants.kV);
 
         this.setDefaultCommand(new HoldIntake(this));
+
+        tof = new TimeOfFlight(1);
+        tof.setRangingMode(RangingMode.Short, starboardSensorDIO);
     }
 
     public void hold(double pos) {
@@ -60,11 +68,14 @@ public class Intake extends SubsystemBase{
         intake.set(supplier);
     }
 
+    public Command feed() {
+        return run(()-> runOpenLoop(1));
+    }
+
     public void autoIntake() {
         if(!isNote()){
             if(!(intake.getOutputCurrent() >= 15)) {
                 intake.set((velPID.calculate(getVelocity(), IntakeConstants.kIntakeSpeed) + ff.calculate(IntakeConstants.kIntakeSpeed))/11000);
-                System.out.println(intake.getAppliedOutput());
             }
             else {
                 intake.set((velPID.calculate(getVelocity(), IntakeConstants.kIntakeCaptureSpeed) + ff.calculate(IntakeConstants.kIntakeCaptureSpeed))/11000);           
@@ -72,7 +83,6 @@ public class Intake extends SubsystemBase{
         }
         else {
             intake.set(0);
-            System.out.println("capture");
         }
     }
 
@@ -86,8 +96,13 @@ public class Intake extends SubsystemBase{
     // }
 
     public boolean isNote() {
-        return opticalTwo.get();
-        //return opticalOne.get();
+        //return opticalTwo.get();
+        if(tof.getRange() > 220) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     public double getPosition() {
@@ -129,5 +144,9 @@ public class Intake extends SubsystemBase{
 
     public boolean isRight() {
         return opticalOne.get();
+    }
+
+    public double getRange() {
+        return tof.getRange();
     }
 }

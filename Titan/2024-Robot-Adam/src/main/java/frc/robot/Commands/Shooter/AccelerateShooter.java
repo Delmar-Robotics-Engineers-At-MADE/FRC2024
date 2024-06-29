@@ -13,13 +13,11 @@ public class AccelerateShooter extends Command {
   private Shooter shooter;
   private double setpoint;
   private boolean end;
-  private boolean isAtSeptoint;
-  /** Creates a new RunShooterAtVelocity. */
+  /** Creates a new RunShooterEternal. */
   public AccelerateShooter(Shooter launchingDevice, double velocity) {
     shooter = launchingDevice;
     setpoint = velocity*ShooterConstants.kCompenstion;
     end = false;
-    isAtSeptoint = false;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(launchingDevice);
   }
@@ -27,7 +25,6 @@ public class AccelerateShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    isAtSeptoint = false;
     end = false;
     System.out.println("accel init");
     //Shuffleboard.getTab("shooter").addBoolean("at setpoint", () -> isAtSeptoint);
@@ -39,7 +36,6 @@ public class AccelerateShooter extends Command {
     if(Toolkit.isInTolarance(shooter.getTopVelocity(), setpoint, ShooterConstants.kTolerance) && 
     Toolkit.isInTolarance(shooter.getBottomVelocity(), setpoint, ShooterConstants.kTolerance)) {
       System.out.println("in tolearance");
-      isAtSeptoint = true;
       end = true;
     }
     else {

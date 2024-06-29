@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.ArmConstants;
@@ -13,7 +12,6 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Utils.Dashboard;
 import frc.robot.Utils.Toolkit;
@@ -24,14 +22,14 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -39,7 +37,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import frc.robot.Commands.Arm.HoldArm;
 import frc.robot.Commands.Arm.RunArmClosedLoop;
-import frc.robot.Commands.Arm.RunArmOpenLoop;
 import frc.robot.Commands.CMDGroup.ForceFeed;
 import frc.robot.Commands.CMDGroup.ForceReverse;
 import frc.robot.Commands.Climbers.HoldClimber;
@@ -47,12 +44,12 @@ import frc.robot.Commands.Climbers.HomeClimber;
 import frc.robot.Commands.Climbers.RunClimberNormalLaw;
 
 import frc.robot.Commands.Intake.Feed;
+import frc.robot.Commands.Intake.HoldIntake;
 import frc.robot.Commands.Intake.IntakeNoteAutomatic;
 import frc.robot.Commands.Intake.RunIntakeOpenLoop;
 import frc.robot.Commands.Shooter.AccelerateShooter;
-import frc.robot.Commands.Shooter.RunShooterAtVelocity;
 import frc.robot.Commands.Shooter.RunShooterEternal;
-
+import frc.robot.Utils.Controller;
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -67,11 +64,11 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter(ShooterConstants.kTopID, ShooterConstants.kBottomID);
   private final Climber m_portClimber = new Climber(ClimberConstants.kPortID, ClimberConstants.kPortDIO, true);
   private final Climber m_starboardClimber = new Climber(ClimberConstants.kStarboardID, ClimberConstants.kStarboardDIO, false);
-  private final Blinkin blinkin = Blinkin.getInstance();
+  private final Blinkin blinkin = new Blinkin();
 
   // The driver's controller
-  CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
-  CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
+  private Controller c0 = new Controller(0);
+  private Controller c1 = new Controller(1);
   //DriverCommandXboxController m_driverControllerX = new DriverCommandXboxController(2);
 
   private final Dashboard dashboard;
@@ -94,7 +91,7 @@ public class RobotContainer {
 
   ParallelCommandGroup forceReverse = new ParallelCommandGroup(
     new RunIntakeOpenLoop(m_intake, IntakeConstants.kReverseSpeed),
-    new RunShooterAtVelocity(m_shooter, ShooterConstants.kAmpSpeed, true)
+    new RunShooterEternal(m_shooter, ShooterConstants.kAmpSpeed, true)
   );
 
 
@@ -183,27 +180,18 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Configure the button bindings
-    m_driverController.setXChannel(1);
-    m_driverController.setYChannel(0);
-    m_driverController.setTwistChannel(2);
-
-
     configureButtonBindings();
 
     // Register Named Commands
     NamedCommands.registerCommand("intake", intake);
     NamedCommands.registerCommand("shootSubwoofer", new SequentialCommandGroup(
-        Toolkit.sout("sFire init"),
-          new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos),
-          new AccelerateShooter(m_shooter, ShooterConstants.kSubwooferSpeed),
-        Toolkit.sout("shoot init"),
-        new ParallelRaceGroup(
-          new WaitCommand(ShooterConstants.kLaunchTime),
-          new RunShooterEternal(m_shooter, ShooterConstants.kSubwooferSpeed, true),
-          new Feed(m_intake)
-        ),
-        Toolkit.sout("sFire end")
-      ));
+      new ParallelRaceGroup(
+      new WaitCommand(4),
+        armSpeaker()),
+      new ParallelRaceGroup(
+        fireSpeaker(),
+        new WaitCommand(3))
+    ));
     NamedCommands.registerCommand("shootpodium", new SequentialCommandGroup(
         Toolkit.sout("Fire init"),
           new RunArmClosedLoop(m_arm, ArmConstants.k3mPos),
@@ -235,51 +223,51 @@ public class RobotContainer {
 
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_driverController.getX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getTwist()*DriverConstants.kYawSpeed, OIConstants.kDriveDeadband),
-          true, true), m_robotDrive));
-
-    m_driverController.button(DriverConstants.kAutoAmp). whileTrue(
-      new RunCommand(
-        () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_driverController.getX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getTwist()*DriverConstants.kYawSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getRightX()*DriverConstants.kYawSpeed, 0.05),
           true, true), m_robotDrive));
 
     // The left stick controls translation of the robot.
     // Turning is controlled by the X axis of the right stick.
-    m_operatorController.leftStick().or(m_operatorController.rightStick()).toggleOnTrue(
+    c0.fpvIntake().whileTrue(
     new RunCommand(
       () -> m_robotDrive.drive(
-        -MathUtil.applyDeadband(m_operatorController.getLeftY()*OperatorConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
-        -MathUtil.applyDeadband(m_operatorController.getLeftX()*OperatorConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
-        -MathUtil.applyDeadband(m_operatorController.getRightX()*OperatorConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
-        true, true), m_robotDrive));
+          -MathUtil.applyDeadband(c0.getLeftY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getRightX()*DriverConstants.kMYawSpeed, 0.05),
+        false,true), m_robotDrive));
 
-    m_driverController.button(DriverConstants.kTurbo).whileTrue(
+    c1.fpvIntake().whileTrue(
+    new RunCommand(
+      () -> m_robotDrive.drive(
+          -MathUtil.applyDeadband(c1.getRightY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getLeftX()*DriverConstants.kMYawSpeed, 0.05),
+        false,true), m_robotDrive));
+
+    c0.leftStick().toggleOnTrue(
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getRightX()*DriverConstants.kYawSpeed, 0.05),
           true, true), m_robotDrive));
-    
-    m_operatorController.start().whileTrue(
+
+    c1.leftStick().toggleOnTrue(
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_operatorController.getLeftY(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_operatorController.getLeftX(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_operatorController.getRightX()*DriverConstants.kYawSpeed, OIConstants.kDriveDeadband),
-          false, true), m_robotDrive));
+          -MathUtil.applyDeadband(c1.getRightY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getLeftX()*DriverConstants.kYawSpeed, 0.05),
+          true, true), m_robotDrive));
 
     // Subsystem Default Commands
     //m_intake.setDefaultCommand(new HoldIntake(m_intake));
     m_arm.setDefaultCommand(new SequentialCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kDefaultPos),
       new HoldArm(m_arm)));
-    m_shooter.setDefaultCommand(new RunShooterAtVelocity(m_shooter, ShooterConstants.kIdleSpeed, false));
+    m_shooter.setDefaultCommand(new RunShooterEternal(m_shooter, ShooterConstants.kIdleSpeed, false));
     m_portClimber.setDefaultCommand(new HoldClimber(m_portClimber));
     m_starboardClimber.setDefaultCommand(new HoldClimber(m_starboardClimber));
 
@@ -296,47 +284,75 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driverController.button(DriverConstants.kSetX)
+    c0.xMode().or(c1.xMode())
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
 
-    m_driverController.button(DriverConstants.kIntake).whileTrue(intake);
-    m_driverController.button(DriverConstants.kStowArm).toggleOnTrue(new SequentialCommandGroup(
-      new RunArmClosedLoop(m_arm, ArmConstants.kStowPos),
-      new HoldArm(m_arm)
-    ));
-    m_driverController.button(DriverConstants.kAutoIntake).and(m_driverController.button(DriverConstants.kIntake)).onTrue(
-      new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive)
-    );
-    m_driverController.button(DriverConstants.kIntake).and(m_driverController.button(DriverConstants.kAutoIntake)).onTrue(
-      new InstantCommand(() -> System.out.println("reset gyro"))
-    );
-    m_driverController.button(DriverConstants.kSelfDestruct).onTrue(
-      new InstantCommand(() -> System.out.println("¡KABOOM!"))
-    );
-
-    m_operatorController.start().onTrue(new InstantCommand(() -> override = true));
-    m_operatorController.start().onFalse(new InstantCommand(() -> override = false));
-    m_operatorController.start().and(m_operatorController.povUp()).whileTrue(new RunArmOpenLoop(m_arm, ArmConstants.kManualSpeed));
-    m_operatorController.start().and(m_operatorController.povDown()).whileTrue(new RunArmOpenLoop(m_arm, -ArmConstants.kManualSpeed));
-    m_operatorController.start().and(m_operatorController.povRight()).whileTrue(new ForceFeed(m_intake, m_shooter));
-    m_operatorController.start().and(m_operatorController.povLeft()).whileTrue(new ForceReverse(m_intake, m_shooter));
-
-    m_operatorController.back().whileTrue(homeClimbers);
-    m_operatorController.rightBumper().whileTrue(new RunClimberNormalLaw(m_starboardClimber, true));
-    m_operatorController.rightTrigger().whileTrue(new RunClimberNormalLaw(m_starboardClimber, false));
-    m_operatorController.leftBumper().whileTrue(new RunClimberNormalLaw(m_portClimber, true));
-    m_operatorController.leftTrigger().whileTrue(new RunClimberNormalLaw(m_portClimber, false));
-
-    m_operatorController.a().whileTrue(backAmp);
-    m_operatorController.b().whileTrue(shuttleFire);
-    m_operatorController.y().whileTrue(subwooferFire);
-    m_operatorController.x().whileTrue(new ParallelCommandGroup(
+    c0.fpvIntake().or(c1.fpvIntake()).whileTrue(new ParallelCommandGroup(
       new IntakeNoteAutomatic(m_intake),
       new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
+    c0.intake().or(c1.intake()).whileTrue(new ParallelCommandGroup(
+      new IntakeNoteAutomatic(m_intake),
+      new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
+
+    c0.stow().or(c1.stow()).toggleOnTrue(new SequentialCommandGroup(
+      new RunArmClosedLoop(m_arm, ArmConstants.kStowPos),
+      new HoldArm(m_arm)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    c0.resetGyro().or(c1.resetGyro()).onTrue(
+      new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive)
+    );
+
+    c0.forceFeed().or(c1.forceFeed()).whileTrue(new ForceFeed(m_intake, m_shooter));
+    c0.forceReverse().or(c1.forceReverse()).whileTrue(new ForceReverse(m_intake, m_shooter));
+
+    c0.homeClimbers().or(c1.homeClimbers()).whileTrue(homeClimbers);
+    c0.rUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, true));
+    c0.rDown().or(c1.rDown()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, false));
+    c0.lUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_portClimber, true));
+    c0.lDown().or(c1.lDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
+
+    c0.armAmp().or(c1.armAmp()).whileTrue(new ParallelCommandGroup(
+      m_shooter.accelerate(ShooterConstants.kAmpSpeed),
+      new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
+
+    c0.armSpeaker().or(c1.armSpeaker()).whileTrue(new ParallelCommandGroup(
+      m_shooter.accelerate(ShooterConstants.kSubwooferSpeed),
+      new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
+
+
+    c0.fireAmp().or(c1.fireAmp()).whileTrue(new ParallelCommandGroup(
+      m_intake.feed()
+    ));
+    c0.shuttle().or(c1.shuttle()).whileTrue(fireShuttle());
+    c0.fireSpeaker().or(c1.fireSpeaker()).whileTrue(new ConditionalCommand(
+      m_intake.feed(), new HoldIntake(m_intake), m_shooter::isSubwooferSpeed));
   }
     
+  private Command fireSpeaker() {
+    return
+      new ParallelCommandGroup(
+      new HoldArm(m_arm),
+      m_shooter.fire(ShooterConstants.kSubwooferSpeed),
+      m_intake.feed());
+  }
+
+  private Command fireShuttle() {
+    return
+      new ParallelCommandGroup(
+      new HoldArm(m_arm),
+      m_shooter.fire(ShooterConstants.kShuttleSpeed),
+      m_intake.feed());
+  }
+
+  private Command armSpeaker() {
+    return
+    new ParallelCommandGroup(
+      m_shooter.accelerate(ShooterConstants.kSubwooferSpeed),
+      new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)
+    );
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -345,5 +361,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public Blinkin getBlinkin() {
+    return blinkin;
   }
 }

@@ -12,7 +12,7 @@ public class RunShooterEternal extends Command {
   private Shooter shooter;
   private double setpoint;
   private boolean compensate;
-  /** Creates a new RunShooterAtVelocity. */
+  /** Creates a new RunShooterEternal. */
   public RunShooterEternal(Shooter launchingDevice, double velocity, boolean compansation) {
     shooter = launchingDevice;
     setpoint = velocity;

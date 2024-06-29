@@ -5,14 +5,14 @@
 package frc.robot.Commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Blinkin;
+//import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Intake;
 
 public class IntakeNoteAutomatic extends Command {
   private Intake intake;
   private boolean end;
   private boolean capture;
-  private Blinkin blinkin;
+  //private Blinkin blinkin;
   /** Creates a new IntakeNoteAutomatic. */
   public IntakeNoteAutomatic(Intake in/*, Blinkin blinkin*/) {
     intake = in;
@@ -36,7 +36,7 @@ public class IntakeNoteAutomatic extends Command {
     if(intake.isNote()) {
       capture = true;
       intake.halt();
-      System.out.println("¡CAPTURE!");
+
       /*blinkin.indCapture();*/
       end = true;
     }
