@@ -17,9 +17,13 @@ import frc.robot.Constants.LEDConstants;
 
 public class Blinkin extends SubsystemBase {
   private static Blinkin instance = null;
-  public static Blinkin getInstance() {
-    if (instance == null) instance = new Blinkin();
-
+  public Blinkin getInstance() {
+    if (instance == null) {
+      instance = new Blinkin();
+    }
+    else {
+      instance = this;
+    }
     return instance;
   }
   private final Spark one;

@@ -25,7 +25,7 @@ public class HoldArm extends Command {
   public void initialize() {
     pos = arm.getPos();
     state = new State(pos, 0);
-    System.out.println("holding arm");
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -37,7 +37,7 @@ public class HoldArm extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Hold interupt");
+
   }
 
   // Returns true when the command should end.

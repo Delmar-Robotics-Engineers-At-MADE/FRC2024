@@ -15,7 +15,7 @@ public final class Toolkit {
     public static boolean isInTolarance(double input, double target, double tolerance) {
         double upLim = target + tolerance;
         double downLim = target - tolerance;
-        if(downLim <= input && input <= upLim) {
+        if(downLim < input && input < upLim) {
             return true;
         }
         else {

@@ -133,7 +133,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDriveDeadband = 0.1;
+    public static final double kDriveDeadband = 0.05;
     public static final int kOperatorControllerPort = 1;
   }
 
@@ -218,7 +218,7 @@ public final class Constants {
     public static final int kLeftID = 6;
     public static final int kRightID = 7;
     public static final double kStowPos = 0.26;
-    public static final double kDefaultPos = 0.032;
+    public static final double kDefaultPos = 0.04;
     // intake go lower
     public static final double kIntakePos = 0.0232;
     public static final double kSubwooferPos = 0.04;
@@ -259,7 +259,7 @@ public final class Constants {
     public static final int kStarboardID = 16;
     public static final int kPortDIO = 3;
     public static final int kStarboardDIO = 2;
-    public static final double kP = 0.01; 
+    public static final double kP = 0.015; 
     public static final double kI = 0;
     public static final double kD = 0; 
     public static final double kIz = 0; 
@@ -279,8 +279,10 @@ public final class Constants {
 
   // Cannot remember if the Extreme 3D PRO is 0 index or not.
   public static final class DriverConstants {
-    public static final double kDefaultSpeed = 0.9;
-    public static final double kYawSpeed = 0.7;
+    public static final double kDefaultSpeed = 0.85;
+    public static final double kYawSpeed = 0.6;
+    public static final double kManoeuvreSpeed = 0.4;
+    public static final double kMYawSpeed = 0.3;
     public static final int kSetX = 4;
     public static final int kIntake = 1;
     public static final int kStowArm = 5;
@@ -288,10 +290,6 @@ public final class Constants {
     public static final int kAutoAmp = 6;
     public static final int kSelfDestruct = 9;
     public static final int kTurbo = 2;
-  }
-
-  public static final class OperatorConstants {
-    public static final double kManoeuvreSpeed = 0.4; 
   }
 
   public static final class VisionConstants {
@@ -332,5 +330,11 @@ public final class Constants {
     public static final double red = -0.31;
     public static final double blue = -0.29;
     public static final double grey = -0.33;
+  }
+
+  public enum Types {
+    AMP,
+    SPEAKER,
+    SHUTTLE
   }
 }

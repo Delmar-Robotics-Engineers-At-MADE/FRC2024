@@ -21,14 +21,12 @@ public class RunArmOpenLoop extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("CMD init - running arm");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     arm.runOpenLoop(supplier);
-    System.out.println("¡ARM! ¡EXCERCISE CAUTION!");
   }
 
   // Called once the command ends or is interrupted.
