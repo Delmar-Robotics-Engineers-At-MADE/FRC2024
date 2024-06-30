@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+// import com.pathplanner.lib.auto.AutoBuilder;
+// import com.pathplanner.lib.auto.NamedCommands;
 
 import frc.robot.Commands.Arm.HoldArm;
 import frc.robot.Commands.Arm.RunArmClosedLoop;
@@ -106,7 +106,7 @@ public class RobotContainer {
         Toolkit.sout("Amp end")
       );
 
-  private final SendableChooser<Command> autoChooser;
+  // private final SendableChooser<Command> autoChooser;
   
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -116,37 +116,35 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Register Named Commands
-    NamedCommands.registerCommand("intake", intake);
-    NamedCommands.registerCommand("shootSubwoofer", new SequentialCommandGroup(
-      new ParallelRaceGroup(
-      new WaitCommand(4),
-        armSpeaker()),
-      new ParallelRaceGroup(
-        fireSpeaker(),
-        new WaitCommand(3))
-    ));
-    NamedCommands.registerCommand("shootpodium", new SequentialCommandGroup(
-        Toolkit.sout("Fire init"),
-          new RunArmClosedLoop(m_arm, ArmConstants.k3mPos),
-        Toolkit.sout("shoot init"),
-        Toolkit.sout("Fire end")
-      ));
-    NamedCommands.registerCommand("armInside", new RunArmClosedLoop(m_arm, ArmConstants.kStowPos));
-    // NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
-    // NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
-    NamedCommands.registerCommand("armDown", new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos));
+    // NamedCommands.registerCommand("intake", intake);
+    // NamedCommands.registerCommand("shootSubwoofer", new SequentialCommandGroup(
+    //   new ParallelRaceGroup(
+    //   new WaitCommand(4),
+    //     armSpeaker()),
+    //   new ParallelRaceGroup(
+    //     fireSpeaker(),
+    //     new WaitCommand(3))
+    // ));
+    // NamedCommands.registerCommand("shootpodium", new SequentialCommandGroup(
+    //     Toolkit.sout("Fire init"),
+    //       new RunArmClosedLoop(m_arm, ArmConstants.k3mPos),
+    //     Toolkit.sout("shoot init"),
+    //     Toolkit.sout("Fire end")
+    //   ));
+    // NamedCommands.registerCommand("armInside", new RunArmClosedLoop(m_arm, ArmConstants.kStowPos));
+    // NamedCommands.registerCommand("armDown", new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos));
 
     // Another option that allows you to specify the default auto by its name
-    autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-    dashboard = new Dashboard(m_arm, m_portClimber_unused, m_starboardClimber_unused, autoChooser);
-    Shuffleboard.getTab("match").add(autoChooser);
+    dashboard = new Dashboard(m_arm, m_portClimber_unused, m_starboardClimber_unused /* , autoChooser */);
+    // Shuffleboard.getTab("match").add(autoChooser);
 
     // Configure default commands
 
     // Subsystem Default Commands
     m_arm.setDefaultCommand(new SequentialCommandGroup(
-      new RunArmClosedLoop(m_arm, ArmConstants.kDefaultPos),
+      // new RunArmClosedLoop(m_arm, ArmConstants.kDefaultPos),
       new HoldArm(m_arm)));
     // m_portClimber.setDefaultCommand(new HoldClimber(m_portClimber));
     // m_starboardClimber.setDefaultCommand(new HoldClimber(m_starboardClimber));
@@ -165,6 +163,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     c0.intake().whileTrue(new ParallelCommandGroup(
+      Toolkit.sout("arm intake"),
       new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
 
     c0.stow().toggleOnTrue(new SequentialCommandGroup(
@@ -179,9 +178,11 @@ public class RobotContainer {
     // c0.lDown().or(c1.lDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
 
     c0.armAmp().whileTrue(new ParallelCommandGroup(
+      Toolkit.sout("arm amp"),
       new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
 
     c0.armSpeaker().whileTrue(new ParallelCommandGroup(
+      Toolkit.sout("arm speaker"),
       new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
   }
     
@@ -210,7 +211,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return null; //autoChooser.getSelected();
   }
 
   public Blinkin getBlinkin() {

@@ -17,8 +17,8 @@ public class Dashboard extends SubsystemBase{
     public Dashboard(
      Arm arm,
      Climber port, 
-     Climber starboard,
-     Sendable autochooser) {
+     Climber starboard
+     /*Sendable autochooser*/) {
 
         Shuffleboard.getTab("drivetrain");
         Shuffleboard.getTab("arm");
