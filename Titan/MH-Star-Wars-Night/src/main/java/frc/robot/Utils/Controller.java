@@ -16,44 +16,44 @@ public class Controller extends CommandXboxController {
     }
 
     public Trigger armAmp() {
-        return new Trigger(()-> (getRightTriggerAxis() > 0.1));
+        return new Trigger(()-> (getRightTriggerAxis() > 0.5));
     }
 
     public Trigger armSpeaker() {
-        return new Trigger(()-> (getLeftTriggerAxis() > 0.1));
+        return new Trigger(()-> (getLeftTriggerAxis() > 0.5));
     }
 
-    public Trigger fireAmp() {
-        return rightTrigger(0.8);
-    }
+    // public Trigger fireAmp() {
+    //     return rightTrigger(0.8);
+    // }
 
-    public Trigger fireSpeaker() {
-        return leftTrigger(0.8);
-    }
+    // public Trigger fireSpeaker() {
+    //     return leftTrigger(0.8);
+    // }
 
-    public Trigger fpvIntake() {
-        return leftBumper().debounce(0.1);
-    }
+    // public Trigger fpvIntake() {
+    //     return leftBumper().debounce(0.1);
+    // }
 
     public Trigger intake() {
         return rightBumper();
     }
 
-    public Trigger forceFeed() {
-        return start();
-    }
+    // public Trigger forceFeed() {
+    //     return start();
+    // }
 
-    public Trigger forceReverse() {
-        return back();
-    }
+    // public Trigger forceReverse() {
+    //     return back();
+    // }
 
-    public Trigger shuttle() {
-        return b();
-    }
+    // public Trigger shuttle() {
+    //     return b();
+    // }
 
-    public Trigger xMode() {
-        return x();
-    }
+    // public Trigger xMode() {
+    //     return x();
+    // }
 
     public Trigger lUp() {
         return povUp();
@@ -71,9 +71,9 @@ public class Controller extends CommandXboxController {
         return a();
     }
 
-    public Trigger resetGyro() {
-        return y().and(rightBumper());
-    }
+    // public Trigger resetGyro() {
+    //     return y().and(rightBumper());
+    // }
 
     public Trigger stow() {
         return leftBumper().and(rightBumper());

@@ -40,14 +40,12 @@ import frc.robot.Utils.Controller;
 public class RobotContainer {
   // The robot's subsystems
   private final Arm m_arm = new Arm(ArmConstants.kLeftID, ArmConstants.kRightID);
-  private final Climber m_portClimber = new Climber(ClimberConstants.kPortID, ClimberConstants.kPortDIO, true);
-  private final Climber m_starboardClimber = new Climber(ClimberConstants.kStarboardID, ClimberConstants.kStarboardDIO, false);
+  private final Climber m_portClimber_unused = new Climber(ClimberConstants.kPortID, ClimberConstants.kPortDIO, true);
+  private final Climber m_starboardClimber_unused = new Climber(ClimberConstants.kStarboardID, ClimberConstants.kStarboardDIO, false);
   private final Blinkin blinkin = new Blinkin();
 
   // The driver's controller
   private Controller c0 = new Controller(0);
-  private Controller c1 = new Controller(1);
-  //DriverCommandXboxController m_driverControllerX = new DriverCommandXboxController(2);
 
   private final Dashboard dashboard;
 
@@ -59,10 +57,10 @@ public class RobotContainer {
     new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)
   );
 
-  ParallelCommandGroup homeClimbers = new ParallelCommandGroup(
-    new HomeClimber(m_portClimber),
-    new HomeClimber(m_starboardClimber)
-  );
+  // ParallelCommandGroup homeClimbers = new ParallelCommandGroup(
+  //   new HomeClimber(m_portClimber),
+  //   new HomeClimber(m_starboardClimber)
+  // );
 
   // Firing Sequences
   SequentialCommandGroup subwooferFire = new SequentialCommandGroup(
@@ -134,14 +132,14 @@ public class RobotContainer {
         Toolkit.sout("Fire end")
       ));
     NamedCommands.registerCommand("armInside", new RunArmClosedLoop(m_arm, ArmConstants.kStowPos));
-    NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
-    NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
+    // NamedCommands.registerCommand("homePort", new HomeClimber(m_portClimber));
+    // NamedCommands.registerCommand("homeStarboard", new HomeClimber(m_starboardClimber));
     NamedCommands.registerCommand("armDown", new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos));
 
     // Another option that allows you to specify the default auto by its name
     autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-    dashboard = new Dashboard(m_arm, m_portClimber, m_starboardClimber, autoChooser);
+    dashboard = new Dashboard(m_arm, m_portClimber_unused, m_starboardClimber_unused, autoChooser);
     Shuffleboard.getTab("match").add(autoChooser);
 
     // Configure default commands
@@ -150,8 +148,8 @@ public class RobotContainer {
     m_arm.setDefaultCommand(new SequentialCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kDefaultPos),
       new HoldArm(m_arm)));
-    m_portClimber.setDefaultCommand(new HoldClimber(m_portClimber));
-    m_starboardClimber.setDefaultCommand(new HoldClimber(m_starboardClimber));
+    // m_portClimber.setDefaultCommand(new HoldClimber(m_portClimber));
+    // m_starboardClimber.setDefaultCommand(new HoldClimber(m_starboardClimber));
 
     Shuffleboard.getTab("match").addBoolean("override", () -> override);
   }
@@ -166,30 +164,25 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    c0.fpvIntake().or(c1.fpvIntake()).whileTrue(new ParallelCommandGroup(
-      new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
-    c0.intake().or(c1.intake()).whileTrue(new ParallelCommandGroup(
+    c0.intake().whileTrue(new ParallelCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
 
-    c0.stow().or(c1.stow()).toggleOnTrue(new SequentialCommandGroup(
+    c0.stow().toggleOnTrue(new SequentialCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kStowPos),
       new HoldArm(m_arm)
     ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    c0.homeClimbers().or(c1.homeClimbers()).whileTrue(homeClimbers);
-    c0.rUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, true));
-    c0.rDown().or(c1.rDown()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, false));
-    c0.lUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_portClimber, true));
-    c0.lDown().or(c1.lDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
+    // c0.homeClimbers().or(c1.homeClimbers()).whileTrue(homeClimbers);
+    // c0.rUp().whileTrue(new RunClimberNormalLaw(m_starboardClimber, true));
+    // c0.rDown().whileTrue(new RunClimberNormalLaw(m_starboardClimber, false));
+    // c0.lUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_portClimber, true));
+    // c0.lDown().or(c1.lDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
 
-    c0.armAmp().or(c1.armAmp()).whileTrue(new ParallelCommandGroup(
+    c0.armAmp().whileTrue(new ParallelCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
 
-    c0.armSpeaker().or(c1.armSpeaker()).whileTrue(new ParallelCommandGroup(
+    c0.armSpeaker().whileTrue(new ParallelCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
-
-
-    c0.shuttle().or(c1.shuttle()).whileTrue(fireShuttle());
   }
     
   private Command fireSpeaker() {
