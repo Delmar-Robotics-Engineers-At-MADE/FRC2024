@@ -240,8 +240,8 @@ public final class Constants {
     public static final double kD = 0.7; 
     public static final double kIz = 0; 
     public static final double kFF = 0; 
-    public static final double kMaxOutput = 0.7; 
-    public static final double kMinOutput = -0.7;
+    public static final double kMaxOutput = 0.4; // was 0.7 for 2024 season 
+    public static final double kMinOutput = -0.3; // was 0.7 for 2024 season
     public static final double kMaxAccel = 0.18;
     public static final double kMaxVel = 0.85;
 
