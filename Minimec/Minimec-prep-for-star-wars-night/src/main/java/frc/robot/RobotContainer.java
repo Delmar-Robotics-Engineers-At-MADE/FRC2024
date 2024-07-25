@@ -23,6 +23,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnOrStrafeAndDistance;
 import frc.robot.commands.UpdateBestPhotonCommand;
+import frc.robot.commands.WaitForNoNote;
 import frc.robot.commands.WaitForNote;
 import frc.robot.commands.TurnOrStrafeToNote;
 import frc.robot.subsystems.DriveSubsystem;
@@ -55,6 +56,8 @@ public class RobotContainer {
   private final SequentialCommandGroup m_cmdWaitForNote = new SequentialCommandGroup(
     new InstantCommand(() -> System.out.println("waiting for note")),
     new WaitForNote(m_photon),
+    new InstantCommand(() -> System.out.println("waiting for NO note")),
+    new WaitForNoNote(m_photon),
     new InstantCommand(() -> System.out.println("done waiting for note"))
   );
 
@@ -78,6 +81,7 @@ public class RobotContainer {
     //         m_robotDrive));
 
     // default command
+    m_cmdWaitForNote.addRequirements(m_photon, m_robotDrive);
     m_robotDrive.setDefaultCommand(m_cmdWaitForNote);
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
