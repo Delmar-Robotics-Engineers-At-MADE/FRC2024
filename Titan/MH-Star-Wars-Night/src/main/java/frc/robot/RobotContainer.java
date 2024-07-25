@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.ArmConstants;
@@ -13,12 +14,14 @@ import frc.robot.Utils.Toolkit;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.PhotonObjects;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 // import com.pathplanner.lib.auto.AutoBuilder;
@@ -29,7 +32,8 @@ import frc.robot.Commands.Arm.RunArmClosedLoop;
 import frc.robot.Commands.Climbers.HoldClimber;
 import frc.robot.Commands.Climbers.HomeClimber;
 import frc.robot.Commands.Climbers.RunClimberNormalLaw;
-
+import frc.robot.Commands.Photon.WaitForNoNote;
+import frc.robot.Commands.Photon.WaitForNote;
 import frc.robot.Utils.Controller;
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -43,6 +47,7 @@ public class RobotContainer {
   private final Climber m_portClimber_unused = new Climber(ClimberConstants.kPortID, ClimberConstants.kPortDIO, true);
   private final Climber m_starboardClimber_unused = new Climber(ClimberConstants.kStarboardID, ClimberConstants.kStarboardDIO, false);
   private final Blinkin blinkin = new Blinkin();
+  private final PhotonObjects m_photon = new PhotonObjects(null);
 
   // The driver's controller
   private Controller c0 = new Controller(0);
@@ -143,12 +148,22 @@ public class RobotContainer {
     // Configure default commands
 
     // Subsystem Default Commands
-    m_arm.setDefaultCommand(new SequentialCommandGroup(
-      // new RunArmClosedLoop(m_arm, ArmConstants.kDefaultPos),
-      new HoldArm(m_arm)));
-    // m_portClimber.setDefaultCommand(new HoldClimber(m_portClimber));
+    // m_arm.setDefaultCommand(new SequentialCommandGroup(new HoldArm(m_arm)));
+    // m_arm.setDefaultCommand(new SequentialCommandGroup( new RunArmClosedLoop(m_arm, ArmConstants.kDefaultPos),m_portClimber.setDefaultCommand(new HoldClimber(m_portClimber));
     // m_starboardClimber.setDefaultCommand(new HoldClimber(m_starboardClimber));
 
+    // sequences for summer demos
+    final SequentialCommandGroup m_cmdWaitForNote = new SequentialCommandGroup(
+      new InstantCommand(() -> System.out.println("waiting for note")),
+      new WaitForNote(m_photon),
+      new InstantCommand(() -> System.out.println("waiting for NO note")),
+      new WaitForNoNote(m_photon),
+      new InstantCommand(() -> System.out.println("done waiting for note"))
+    );
+
+    m_cmdWaitForNote.addRequirements(m_photon, m_arm);
+    m_arm.setDefaultCommand(new SequentialCommandGroup(m_cmdWaitForNote));
+    
     Shuffleboard.getTab("match").addBoolean("override", () -> override);
   }
 
