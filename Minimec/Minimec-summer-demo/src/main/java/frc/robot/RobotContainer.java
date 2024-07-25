@@ -22,6 +22,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DistanceToNote;
+import frc.robot.commands.TurnOrStrafeAndDistance;
 import frc.robot.commands.UpdateBestPhotonCommand;
 import frc.robot.commands.TurnOrStrafeToNote;
 import frc.robot.subsystems.DriveSubsystem;
@@ -126,8 +127,8 @@ public class RobotContainer {
         .whileTrue(new RepeatCommand(new TurnOrStrafeToNote(m_photon, m_robotDrive)));
 
     // rotate to note when red-B pressed
-    // new JoystickButton(m_driverController, Button.kB.value)
-    //     .whileTrue(new RepeatCommand(new TurnToNoteAspect(m_photon, m_robotDrive)));
+    new JoystickButton(m_driverController, Button.kB.value)
+        .whileTrue(new RepeatCommand(new TurnOrStrafeAndDistance(DriveConstants.kSummerDistance, m_photon, m_robotDrive)));
 
   }
 

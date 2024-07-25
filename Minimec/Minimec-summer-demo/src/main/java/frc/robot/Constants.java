@@ -82,6 +82,9 @@ public final class Constants {
     public static final double kDriveD = 0.0001;
     public static final double kDriveToleranceDist = 10;
     public static final double kDriveSetpoint = 300;
+    public static final double kMaxHeightPerS = 100;  // we don't really need this to be profiled, so set high number
+    public static final double kMaxHeightPerSSquared = 100;
+    public static final double kSummerDistance = 200; // actually a height value from photon
 
     // react to Note aspect
     public static final double kAspectP = 0.8;

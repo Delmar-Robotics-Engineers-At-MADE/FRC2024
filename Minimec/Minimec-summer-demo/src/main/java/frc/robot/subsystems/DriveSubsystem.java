@@ -145,12 +145,12 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void turnOrStrafe(double speed) {
+  public void turnOrStrafe(double distanceSpeed, double turnOrStrafeSpeed) {
     double aspect = m_photon.getAspect();
-    if (aspect > 0.8 && aspect < 1.2) {
-      drive(0, 0, speed, false);
+    if (aspect > 0.9 && aspect < 1.1) {
+      drive(distanceSpeed, 0, turnOrStrafeSpeed, false);
     } else {
-      drive(0, speed, 0, false);
+      drive(distanceSpeed, turnOrStrafeSpeed, 0, false);
     }
   }
 
