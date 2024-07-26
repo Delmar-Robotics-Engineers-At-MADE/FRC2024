@@ -24,7 +24,7 @@ public class PhotonAprilTags extends SubsystemBase {
 
   // Constructor
   public PhotonAprilTags(NetworkTableInstance nt) {
-    m_backCam = new PhotonCamera(nt, "HD_Pro_Webcam_C920");
+    // m_backCam = new PhotonCamera(nt, "HD_Pro_Webcam_C920");
   }
 
   // AprilTags

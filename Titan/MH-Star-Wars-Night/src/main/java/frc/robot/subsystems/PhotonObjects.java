@@ -25,7 +25,8 @@ public class PhotonObjects extends SubsystemBase {
 
   /** Creates a new Photonvision. */
   public PhotonObjects(NetworkTableInstance nt) {
-    frontCam = new PhotonCamera(/* nt, */ "Microsoft_LifeCam_HD-3000");
+    frontCam = new PhotonCamera(/* nt, */ "Microsoft_LifeCam_HD-3000"); // on minimec
+    // frontCam = new PhotonCamera(nt,  "photonvision/../HD_Pro_Webcam_C920"); // on summer Titan
     frontCam.setPipelineIndex(0);
   }
 

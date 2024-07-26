@@ -218,6 +218,7 @@ public final class Constants {
     public static final int kLeftID = 6;
     public static final int kRightID = 7;
     public static final double kStowPos = 0.26;
+    public static final double kSummerClosed = 0.07;
     public static final double kDefaultPos = 0.04;
     // intake go lower
     public static final double kIntakePos = 0.0232;
@@ -231,6 +232,7 @@ public final class Constants {
 
     public static final double kShuttlePos = 0.07;
     public static final double kBackAmpPos = 0.265;
+    public static final double kSummerOpen = 0.226;
     public static final double kUpperLimit = 0.35;
     public static final double kLowerLimit = 0.023;
     public static final double kOverrunLimit = 0;
@@ -241,7 +243,7 @@ public final class Constants {
     public static final double kIz = 0; 
     public static final double kFF = 0; 
     public static final double kMaxOutput = 0.4; // was 0.7 for 2024 season 
-    public static final double kMinOutput = -0.3; // was 0.7 for 2024 season
+    public static final double kMinOutput = -0.1; // was 0.7 for 2024 season
     public static final double kMaxAccel = 0.18;
     public static final double kMaxVel = 0.85;
 
