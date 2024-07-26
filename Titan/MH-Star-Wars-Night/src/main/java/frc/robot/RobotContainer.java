@@ -62,9 +62,11 @@ public class RobotContainer {
     final SequentialCommandGroup m_cmdWaitForNote = new SequentialCommandGroup(
       new InstantCommand(() -> System.out.println("waiting for note")),
       new WaitForNote(m_photon),
+      new RunArmClosedLoop(m_arm, ArmConstants.kSummerOpen),
       new InstantCommand(() -> System.out.println("waiting for NO note")),
       new WaitForNoNote(m_photon),
-      new InstantCommand(() -> System.out.println("done waiting for note"))
+      new InstantCommand(() -> System.out.println("done waiting for note")),
+      new RunArmClosedLoop(m_arm, ArmConstants.kSummerClosed)
     );
 
     m_cmdWaitForNote.addRequirements(m_photon, m_arm);
@@ -74,14 +76,14 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    c0.intake().whileTrue(new ParallelCommandGroup(
-      Toolkit.sout("arm intake"),
-      new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
+    // c0.intake().whileTrue(new ParallelCommandGroup(
+    //   Toolkit.sout("arm intake"),
+    //   new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
 
-    c0.stow().toggleOnTrue(new SequentialCommandGroup(
-      new RunArmClosedLoop(m_arm, ArmConstants.kStowPos),
-      new HoldArm(m_arm)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // c0.stow().toggleOnTrue(new SequentialCommandGroup(
+    //   new RunArmClosedLoop(m_arm, ArmConstants.kStowPos),
+    //   new HoldArm(m_arm)
+    // ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
 
     c0.armAmp().whileTrue(new ParallelCommandGroup(

@@ -247,7 +247,7 @@ public final class Constants {
     public static final double kMaxAccel = 0.18;
     public static final double kMaxVel = 0.85;
 
-    public static final double kTolearance = 0.002;
+    public static final double kTolearance = 0.004; // was 0.002 for 2024 season
     public static final double kManualSpeed = 0.3;
 
     public static final double kSVolts = 0;
