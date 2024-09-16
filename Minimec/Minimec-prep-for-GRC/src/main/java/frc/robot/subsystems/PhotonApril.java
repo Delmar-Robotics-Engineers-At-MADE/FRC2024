@@ -16,13 +16,13 @@ public class PhotonApril extends SubsystemBase {
   private PhotonCamera backCam;
   // private Transform3d fake = new Transform3d();
 
-  private double m_bestDistance, m_bestPitch, m_bestSkew;
+  private double m_bestDistance, m_bestYaw, m_bestSkew;
   private boolean m_hasTarget = false;
 
   /* Constructor */
   public PhotonApril(NetworkTableInstance nt) {
-    backCam = new PhotonCamera(nt, "Arducam_OV9281_USB_Camera");
-    m_bestDistance = m_bestPitch = m_bestSkew = 0.0;
+    backCam = new PhotonCamera(/* nt, */ "Arducam_OV9281_USB_Camera");
+    m_bestDistance = m_bestYaw = m_bestSkew = 0.0;
   }
 
   // AprilTags
@@ -44,13 +44,13 @@ public class PhotonApril extends SubsystemBase {
         target3d = new Transform3d(new Translation3d(0, new Rotation3d(0,0,0)), new Rotation3d(0,0,0));
       }
       m_bestDistance = target3d.getX();
-      m_bestPitch = target3d.getY();
+      m_bestYaw = target3d.getY();
       m_bestSkew = target3d.getRotation().getAngle();
     }
   }
 
   public double getDistance() { return m_bestDistance; }
-  public double getPitch() { return m_bestPitch; }
+  public double getYaw() { return m_bestYaw; }
   public double getSkew() { return m_bestSkew; }
   public boolean hasTarget() { return m_hasTarget; }
 

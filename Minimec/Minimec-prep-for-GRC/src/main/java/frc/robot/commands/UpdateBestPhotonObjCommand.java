@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonObjects;
 
 /** A command that will turn the robot to the specified angle. */
-public class UpdateBestPhotonCommand extends CommandBase {
+public class UpdateBestPhotonObjCommand extends CommandBase {
 
   private PhotonObjects m_photon;
 
-  public UpdateBestPhotonCommand(PhotonObjects photon) {
+  public UpdateBestPhotonObjCommand(PhotonObjects photon) {
     m_photon = photon;
   }
 

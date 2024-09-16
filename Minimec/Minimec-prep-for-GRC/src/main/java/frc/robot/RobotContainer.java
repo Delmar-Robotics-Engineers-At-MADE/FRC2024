@@ -22,7 +22,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnOrStrafeAndDistance;
-import frc.robot.commands.UpdateBestPhotonCommand;
+import frc.robot.commands.UpdateBestPhotonAprCommand;
 import frc.robot.commands.WaitForNoNotePhoton;
 import frc.robot.commands.WaitForNotePhoton;
 import frc.robot.commands.TurnOrStrafeToNote;
@@ -84,7 +84,7 @@ public class RobotContainer {
 
     // default command
     m_cmdWaitForNote.addRequirements(m_photonObj, m_robotDrive);
-    m_robotDrive.setDefaultCommand(m_cmdWaitForNote);
+    //m_robotDrive.setDefaultCommand(m_cmdWaitForNote);
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
     driveBaseTab.add("Mecanum Drive", m_robotDrive);
@@ -107,7 +107,7 @@ public class RobotContainer {
     photonObjTab.addNumber("Width", () -> m_photonObj.getWidth());
 
     ShuffleboardTab photonAprilTab = Shuffleboard.getTab("Photon April");
-    photonAprilTab.addNumber("Pitch", () -> m_photonApril.getPitch());
+    photonAprilTab.addNumber("Yaw", () -> m_photonApril.getYaw());
     photonAprilTab.addNumber("Distance", () -> m_photonApril.getDistance());
     photonAprilTab.addNumber("Skew", () -> m_photonApril.getSkew());
 
@@ -135,13 +135,13 @@ public class RobotContainer {
 
     // update info from photon when yellow-Y pressed
     new JoystickButton(m_driverController, Button.kY.value)
-        .whileTrue(new RepeatCommand(new UpdateBestPhotonCommand(m_photonObj)));
+        .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
 
-    // distance to note when blue-X pressed
+    //  rotate to note when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
         .whileTrue(new RepeatCommand(new TurnOrStrafeToNote(m_photonObj, m_robotDrive)));
 
-    // rotate to note when red-B pressed
+    // distance  to note when red-B pressed
     new JoystickButton(m_driverController, Button.kB.value)
         .whileTrue(new RepeatCommand(new TurnOrStrafeAndDistance(DriveConstants.kSummerDistance, m_photonObj, m_robotDrive)));
 
