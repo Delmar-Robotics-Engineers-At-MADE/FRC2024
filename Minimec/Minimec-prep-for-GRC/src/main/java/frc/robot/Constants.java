@@ -70,6 +70,11 @@ public final class Constants {
     public static final double kYawI = 0;
     public static final double kYawD = 0.001;  
     
+    // react to April Tag yaw
+    public static final double kYawAprilP = 0.8;
+    public static final double kYawAprilI = 0;
+    public static final double kYawAprilD = 0.05;  
+    
     // turn rate limits, only meaningful when error measurement is angle
     public static final double kMaxTurnRateDegPerS = 180;
     public static final double kMaxTurnAccelerationDegPerSSquared = 300;

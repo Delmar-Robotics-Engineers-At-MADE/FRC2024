@@ -9,6 +9,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.PIDBase.ProfiledDoublePIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.PhotonApril;
 import frc.robot.subsystems.PhotonObjects;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -16,40 +17,47 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 
 /** A command that will turn the robot to the specified angle using a motion profile. */
-public class TurnOrStrafeAndDistance extends ProfiledDoublePIDCommand {
+public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
   
-  // turn or strafe
+  // turn
   private static ProfiledPIDController m_PID1 = new ProfiledPIDController(
-    DriveConstants.kYawP, DriveConstants.kYawI, DriveConstants.kYawD,
+    DriveConstants.kYawAprilP, DriveConstants.kYawAprilI, DriveConstants.kYawAprilD,
+    new TrapezoidProfile.Constraints(
+                DriveConstants.kMaxTurnRateDegPerS,
+                DriveConstants.kMaxTurnAccelerationDegPerSSquared));
+
+  // strafe
+  private static ProfiledPIDController m_PID2 = new ProfiledPIDController(
+    DriveConstants.kYawAprilP, DriveConstants.kYawAprilI, DriveConstants.kYawAprilD,
     new TrapezoidProfile.Constraints(
                 DriveConstants.kMaxTurnRateDegPerS,
                 DriveConstants.kMaxTurnAccelerationDegPerSSquared));
 
   // distance
-  private static ProfiledPIDController m_PID2 = new ProfiledPIDController(
-    DriveConstants.kDriveP, DriveConstants.kDriveI, DriveConstants.kDriveD,
-    new TrapezoidProfile.Constraints(
-                DriveConstants.kMaxHeightPerS,
-                DriveConstants.kMaxHeightPerSSquared));
+  // private static ProfiledPIDController m_PID2 = new ProfiledPIDController(
+  //   DriveConstants.kDriveP, DriveConstants.kDriveI, DriveConstants.kDriveD,
+  //   new TrapezoidProfile.Constraints(
+  //               DriveConstants.kMaxHeightPerS,
+  //               DriveConstants.kMaxHeightPerSSquared));
 
 
   private static boolean m_shuffleboardLoaded = false;
-  private PhotonObjects m_photon;
+  private PhotonApril m_photonApril;
 
   // constructor
-  public TurnOrStrafeAndDistance(double targetDistance, PhotonObjects photon, DriveSubsystem drive) {
+  public TurnAndStrafeToAprilTag(PhotonApril photon, DriveSubsystem drive) {
     super(
         m_PID1, m_PID2,
         // Close loop on heading and distance
-        photon::getYaw, photon::getHeight,
-        // Set points
-        0.0, targetDistance,
+        photon::getYaw, photon::getSkew,
+        // Set points: centered, and rotated 180 degrees
+        0.0, Math.PI,
         // Pipe output to turn robot
-        (output, setpoint) -> drive.turnOrStrafePhotonObj(output.x2, -output.x1), 
+        (output, setpoint) -> drive.drive(0, output.x2, output.x1, false), 
         // Require the drive
         drive);
 
-    m_photon = photon;
+        m_photonApril = photon;
 
     // Set the controller to be continuous (because it is an angle controller)
     getController1().enableContinuousInput(-180, 180);
@@ -58,7 +66,7 @@ public class TurnOrStrafeAndDistance extends ProfiledDoublePIDCommand {
     getController1()
         .setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
     getController2()
-        .setTolerance(DriveConstants.kDriveToleranceDist);
+        .setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
             
         // Add the PID to dashboard
     if (!m_shuffleboardLoaded) {
@@ -73,14 +81,14 @@ public class TurnOrStrafeAndDistance extends ProfiledDoublePIDCommand {
 
   @Override
   public void execute() {
-    m_photon.UpdateTarget();
+    m_photonApril.updateBestTag();
     super.execute();
   }  
 
   @Override
   public boolean isFinished() {
     // End when the controller is at the reference.
-    return (getController1().atGoal() && getController2().atGoal()) || !m_photon.hasTarget(); // end if we are at goal, or if we lost target
+    return (getController1().atGoal() && getController2().atGoal()) || !m_photonApril.hasTarget(); // end if we are at goal, or if we lost target
   }
 
 }

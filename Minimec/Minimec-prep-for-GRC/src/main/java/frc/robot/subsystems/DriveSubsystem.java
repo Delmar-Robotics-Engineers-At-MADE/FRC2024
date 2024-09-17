@@ -147,6 +147,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
+  public void turnAndStrafeApril(double distanceSpeed, double turnSpeed, double strafeSpeed) {
+    // drive(distanceSpeed, strafeSpeed, turnSpeed, false);
+    drive(distanceSpeed, 0.0, turnSpeed, false);
+  }
+
   public void turnOrStrafePhotonObj(double distanceSpeed, double turnOrStrafeSpeed) {
     double aspect = m_photonObj.getAspect();
     if (aspect > 0.9 && aspect < 1.1) {

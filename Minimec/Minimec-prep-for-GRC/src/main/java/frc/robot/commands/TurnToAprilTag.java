@@ -8,34 +8,34 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.PhotonObjects;
+import frc.robot.subsystems.PhotonApril;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 
 /** A command that will turn the robot to the specified angle using a motion profile. */
-public class TurnOrStrafeToNote extends ProfiledPIDCommand {
+public class TurnToAprilTag extends ProfiledPIDCommand {
   
   private static ProfiledPIDController m_PID = new ProfiledPIDController(
-    DriveConstants.kYawP, DriveConstants.kYawI, DriveConstants.kYawD,
+    DriveConstants.kYawAprilP, DriveConstants.kYawAprilI, DriveConstants.kYawAprilD,
     new TrapezoidProfile.Constraints(
                 DriveConstants.kMaxTurnRateDegPerS,
                 DriveConstants.kMaxTurnAccelerationDegPerSSquared));
 
   private static boolean m_shuffleboardLoaded = false;
-  private PhotonObjects m_photon;
+  private PhotonApril m_photon;
 
   // constructor
-  public TurnOrStrafeToNote(PhotonObjects photon, DriveSubsystem drive) {
+  public TurnToAprilTag(PhotonApril photon, DriveSubsystem drive) {
     super(
         m_PID,
-        // Close loop on heading
+        // Close loop on vision target
         photon::getYaw,
         // Set reference to target
         0.0,
         // Pipe output to turn robot
-        (output, setpoint) -> drive.turnOrStrafePhotonObj(0, -output), 
+        (output, setpoint) -> drive.drive(0, 0, output, false), 
         // Require the drive
         drive);
 
@@ -54,13 +54,13 @@ public class TurnOrStrafeToNote extends ProfiledPIDCommand {
         turnTab.add("Rotate PID", m_PID);
         m_shuffleboardLoaded = true;  // so we do this only once no matter how many instances are created
       }
-      System.out.println("new turn to note command created");
+      System.out.println("new turn to april command created");
   
   }
 
   @Override
   public void execute() {
-    m_photon.UpdateTarget();
+    m_photon.updateBestTag();
     super.execute();
   }  
 

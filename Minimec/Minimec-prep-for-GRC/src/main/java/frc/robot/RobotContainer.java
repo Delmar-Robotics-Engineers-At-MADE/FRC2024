@@ -21,13 +21,15 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.TurnOrStrafeAndDistance;
+import frc.robot.commands.TurnAndStrafeToAprilTag;
+import frc.robot.commands.TurnOrStrafeAndDistancePhoton;
 import frc.robot.commands.UpdateBestPhotonAprCommand;
-import frc.robot.commands.WaitForNoNotePhoton;
-import frc.robot.commands.WaitForNotePhoton;
-import frc.robot.commands.TurnOrStrafeToNote;
+import frc.robot.commands.TurnOrStrafeToNotePhoton;
+import frc.robot.commands.TurnToAprilTag;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonObjects;
+import frc.robot.unused.WaitForNoNotePhoton;
+import frc.robot.unused.WaitForNotePhoton;
 import frc.robot.subsystems.PhotonApril;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -54,15 +56,6 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  // sequences for summer demos
-  private final SequentialCommandGroup m_cmdWaitForNote = new SequentialCommandGroup(
-    new InstantCommand(() -> System.out.println("waiting for note")),
-    new WaitForNotePhoton(m_photonObj),
-    new InstantCommand(() -> System.out.println("waiting for NO note")),
-    new WaitForNoNotePhoton(m_photonObj),
-    new InstantCommand(() -> System.out.println("done waiting for note"))
-  );
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
@@ -70,21 +63,19 @@ public class RobotContainer {
 
     // Configure default commands
     // Set the default drive command to split-stick arcade drive
-    // m_robotDrive.setDefaultCommand(
-    //     // A split-stick arcade command, with forward/backward controlled by the left
-    //     // hand, and turning controlled by the right.
-    //     new RunCommand(
-    //         () ->
-    //             m_robotDrive.drive(
-    //                 -m_driverController.getLeftY()/2,
-    //                 m_driverController.getLeftX()/2,
-    //                 m_driverController.getRightX()/2,
-    //                 true),
-    //         m_robotDrive));
+    m_robotDrive.setDefaultCommand(
+        // A split-stick arcade command, with forward/backward controlled by the left
+        // hand, and turning controlled by the right.
+        new RunCommand(
+            () ->
+                m_robotDrive.drive(
+                    -m_driverController.getLeftY()/2,
+                    m_driverController.getLeftX()/2,
+                    m_driverController.getRightX()/2,
+                    true),
+            m_robotDrive));
 
-    // default command
-    m_cmdWaitForNote.addRequirements(m_photonObj, m_robotDrive);
-    //m_robotDrive.setDefaultCommand(m_cmdWaitForNote);
+
 
     ShuffleboardTab driveBaseTab = Shuffleboard.getTab("Drivebase");
     driveBaseTab.add("Mecanum Drive", m_robotDrive);
@@ -139,11 +130,11 @@ public class RobotContainer {
 
     //  rotate to note when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
-        .whileTrue(new RepeatCommand(new TurnOrStrafeToNote(m_photonObj, m_robotDrive)));
+        .whileTrue(new RepeatCommand(new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive)));
 
     // distance  to note when red-B pressed
-    new JoystickButton(m_driverController, Button.kB.value)
-        .whileTrue(new RepeatCommand(new TurnOrStrafeAndDistance(DriveConstants.kSummerDistance, m_photonObj, m_robotDrive)));
+    // new JoystickButton(m_driverController, Button.kB.value)
+    //     .whileTrue(new RepeatCommand(new TurnOrStrafeAndDistancePhoton(DriveConstants.kSummerDistance, m_photonObj, m_robotDrive)));
 
   }
 
