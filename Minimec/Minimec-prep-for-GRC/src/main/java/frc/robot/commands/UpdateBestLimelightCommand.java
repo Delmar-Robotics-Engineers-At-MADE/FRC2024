@@ -5,20 +5,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PhotonObjects;
+import frc.robot.subsystems.LimelightSubsystem;
 
 /** A command that will turn the robot to the specified angle. */
-public class UpdateBestPhotonObjCommand extends CommandBase {
+public class UpdateBestLimelightCommand extends CommandBase {
 
-  private PhotonObjects m_photon;
+  private LimelightSubsystem m_limelight;
 
-  public UpdateBestPhotonObjCommand(PhotonObjects photon) {
-    m_photon = photon;
+  public UpdateBestLimelightCommand(LimelightSubsystem limelight) {
+    m_limelight = limelight;
   }
 
   @Override
   public void execute() {
-    m_photon.UpdateTarget();
+    m_limelight.updateBestTarget();
   }
 
   @Override

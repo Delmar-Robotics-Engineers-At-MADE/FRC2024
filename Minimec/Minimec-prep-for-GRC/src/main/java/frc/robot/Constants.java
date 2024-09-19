@@ -75,6 +75,13 @@ public final class Constants {
     public static final double kYawAprilI = 0;
     public static final double kYawAprilD = 0.05;  
     
+    // react to Limelight yaw
+    public static final double kYawLimeP = 0.04;
+    public static final double kYawLimeI = 0;
+    public static final double kYawLimeD = 0.001;  
+    public static final double kTurnToleranceLime = .1;
+    public static final double kTurnRateToleranceLimesPerS = 1; // meters (X of photon view) per second
+    
     // react to April Tag skew
     public static final double kSkewAprilP = 1.2;
     public static final double kSkewAprilI = 0;
@@ -96,7 +103,7 @@ public final class Constants {
     public static final double kTurnToleranceM = .1;
     public static final double kTurnRateToleranceMPerS = 1; // meters (X of photon view) per second
 
-    // distance to Note
+    // distance to Note Photon
     public static final double kDriveP = 0.006;
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0001;
@@ -105,6 +112,12 @@ public final class Constants {
     public static final double kMaxHeightPerS = 100;  // we don't really need this to be profiled, so set high number
     public static final double kMaxHeightPerSSquared = 100;
     public static final double kSummerDistance = 200; // actually a height value from photon
+
+    // distance to Note Limelight
+    public static final double kDriveLimeP = 0.2;
+    public static final double kDriveLimeI = 0.0;
+    public static final double kDriveLimeD = 0.01;
+    public static final double kDriveToleranceLimeArea = .5;
 
     // distance to April Tag
     public static final double kDriveAprilP = 1;

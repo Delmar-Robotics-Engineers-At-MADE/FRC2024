@@ -9,78 +9,76 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.PIDBase.ProfiledDoublePIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.PhotonObjects;
+import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 
 /** A command that will turn the robot to the specified angle using a motion profile. */
-public class TurnOrStrafeAndDistancePhoton extends ProfiledDoublePIDCommand {
+public class TurnAndDistanceLimelight extends ProfiledDoublePIDCommand {
   
-  // turn or strafe
+  // turn
   private static ProfiledPIDController m_PID1 = new ProfiledPIDController(
-    DriveConstants.kYawP, DriveConstants.kYawI, DriveConstants.kYawD,
+    DriveConstants.kYawLimeP, DriveConstants.kYawLimeI, DriveConstants.kYawLimeD,
     new TrapezoidProfile.Constraints(
                 DriveConstants.kMaxTurnRateDegPerS,
                 DriveConstants.kMaxTurnAccelerationDegPerSSquared));
 
   // distance
   private static ProfiledPIDController m_PID2 = new ProfiledPIDController(
-    DriveConstants.kDriveP, DriveConstants.kDriveI, DriveConstants.kDriveD,
+    DriveConstants.kDriveLimeP, DriveConstants.kDriveLimeI, DriveConstants.kDriveLimeD,
     new TrapezoidProfile.Constraints(
                 DriveConstants.kMaxHeightPerS,
                 DriveConstants.kMaxHeightPerSSquared));
 
 
   private static boolean m_shuffleboardLoaded = false;
-  private PhotonObjects m_photon;
+  private LimelightSubsystem m_limelight;
 
   // constructor
-  public TurnOrStrafeAndDistancePhoton(double targetDistance, PhotonObjects photon, DriveSubsystem drive) {
+  public TurnAndDistanceLimelight(double targetArea , LimelightSubsystem limelight, DriveSubsystem drive) {
     super(
         m_PID1, m_PID2,
         // Close loop on heading and distance
-        photon::getYaw, photon::getHeight,
+        limelight::getX, limelight::getArea,
         // Set points
-        0.0, targetDistance,
+        0.0, targetArea,
         // Pipe output to turn robot
-        (output, setpoint) -> drive.turnOrStrafePhotonObj(output.x2, -output.x1), 
+        (output, setpoint) -> drive.drive(output.x2, 0, -output.x1, false), 
         // Require the drive
         drive);
 
-    m_photon = photon;
+    m_limelight = limelight;
 
-    // Set the controller to be continuous (because it is an angle controller)
-    getController1().enableContinuousInput(-180, 180);
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
     getController1()
-        .setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
+        .setTolerance(DriveConstants.kTurnToleranceLime, DriveConstants.kTurnRateToleranceLimesPerS);
     getController2()
-        .setTolerance(DriveConstants.kDriveToleranceDist);
+        .setTolerance(DriveConstants.kDriveToleranceLimeArea);
             
         // Add the PID to dashboard
     if (!m_shuffleboardLoaded) {
         ShuffleboardTab turnTab = Shuffleboard.getTab("Drivebase");
-        turnTab.add("double PID1", m_PID1);
-        turnTab.add("double PID2", m_PID2);
+        turnTab.add("lime double PID1", m_PID1);
+        turnTab.add("lime double PID2", m_PID2);
         m_shuffleboardLoaded = true;  // so we do this only once no matter how many instances are created
     }
-    System.out.println("new turn/strafe/drive to note command created");
+    System.out.println("new turn/drive to note (limelight) command created");
   
   }
 
   @Override
   public void execute() {
-    m_photon.UpdateTarget();
+    m_limelight.updateBestTarget();
     super.execute();
   }  
 
   @Override
   public boolean isFinished() {
     // End when the controller is at the reference.
-    return (getController1().atGoal() && getController2().atGoal()) || !m_photon.hasTarget(); // end if we are at goal, or if we lost target
+    return (getController1().atGoal() && getController2().atGoal()) || !m_limelight.hasTarget(); // end if we are at goal, or if we lost target
   }
 
 }

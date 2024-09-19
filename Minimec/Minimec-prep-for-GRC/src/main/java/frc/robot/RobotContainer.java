@@ -22,15 +22,16 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.DistanceToAprilTag;
+import frc.robot.commands.DistanceToNoteLimelight;
+import frc.robot.commands.TurnAndDistanceLimelight;
 import frc.robot.commands.TurnAndStrafeToAprilTag;
-import frc.robot.commands.TurnOrStrafeAndDistancePhoton;
 import frc.robot.commands.UpdateBestPhotonAprCommand;
-import frc.robot.commands.TurnOrStrafeToNotePhoton;
 import frc.robot.commands.TurnToAprilTag;
+import frc.robot.commands.TurnToNoteLimelight;
+import frc.robot.commands.UpdateBestLimelightCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonObjects;
-import frc.robot.unused.WaitForNoNotePhoton;
-import frc.robot.unused.WaitForNotePhoton;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.PhotonApril;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -52,6 +53,7 @@ public class RobotContainer {
   // The robot's subsystems
   private final PhotonObjects m_photonObj = new PhotonObjects(null);
   private final PhotonApril m_photonApril = new PhotonApril(null);
+  private final LimelightSubsystem m_limelight = new LimelightSubsystem();
   private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_photonObj, m_photonApril);
 
   // The driver's controller
@@ -109,6 +111,11 @@ public class RobotContainer {
     photonAprilTab.addNumber("Distance", () -> m_photonApril.getDistance());
     photonAprilTab.addNumber("Skew", () -> m_photonApril.getSkew());
 
+    ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight");
+    limelightTab.addNumber("Area", () -> m_limelight.getArea());
+    limelightTab.addNumber("X", () -> m_limelight.getX());
+    limelightTab.addNumber("Y", () -> m_limelight.getY());
+
   }
 
   /**
@@ -129,7 +136,8 @@ public class RobotContainer {
 
     // update info from photon when yellow-Y pressed
     new JoystickButton(m_driverController, Button.kY.value)
-        .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
+        // .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
+        .whileTrue(new RepeatCommand(new UpdateBestLimelightCommand(m_limelight)));
 
     //  rotate and move to april tag when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
@@ -137,9 +145,13 @@ public class RobotContainer {
         // .whileTrue(new RepeatCommand(new DistanceToAprilTag(m_photonApril, m_robotDrive)));
          .whileTrue(new RepeatCommand(cmdDistanceTurnStrafeToAprilTag));
 
-    // distance  to note when red-B pressed
-    // new JoystickButton(m_driverController, Button.kB.value)
-    //     .whileTrue(new RepeatCommand(new TurnOrStrafeAndDistancePhoton(DriveConstants.kSummerDistance, m_photonObj, m_robotDrive)));
+    // distance and rotate to note when red-B pressed
+    new JoystickButton(m_driverController, Button.kB.value)
+        // .whileTrue(new RepeatCommand(new DistanceToNoteLimelight(6, m_limelight, m_robotDrive)));
+        // .whileTrue(new RepeatCommand(new TurnToNoteLimelight(m_limelight, m_robotDrive)));
+        .whileTrue(new RepeatCommand(new TurnAndDistanceLimelight(6, m_limelight, m_robotDrive)));
+
+        
 
   }
 
