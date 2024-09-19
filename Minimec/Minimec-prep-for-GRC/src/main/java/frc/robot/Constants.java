@@ -91,6 +91,14 @@ public final class Constants {
     public static final double kMaxHeightPerSSquared = 100;
     public static final double kSummerDistance = 200; // actually a height value from photon
 
+    // distance to April Tag
+    public static final double kDriveAprilP = 1;
+    public static final double kDriveAprilI = 0.0;
+    public static final double kDriveAprilD = 0.1;
+    public static final double kDriveAprilToleranceDist = 0.1;  // in meters
+    public static final double kMaxMetersPerS = 100;  // we don't really need this to be profiled, so set high number
+    public static final double kMaxMetersPerSSquared = 100;
+
     // react to Note aspect
     public static final double kAspectP = 0.8;
     public static final double kAspectI = 0.0;

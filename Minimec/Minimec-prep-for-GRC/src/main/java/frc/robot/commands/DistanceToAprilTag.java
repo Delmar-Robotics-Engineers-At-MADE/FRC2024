@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public class DistanceToAprilTag extends ProfiledPIDCommand {
   
   private static ProfiledPIDController m_PID = new ProfiledPIDController(
-    DriveConstants.kYawAprilP, DriveConstants.kYawAprilI, DriveConstants.kYawAprilD,
+    DriveConstants.kDriveAprilP, DriveConstants.kDriveAprilI, DriveConstants.kDriveAprilD,
     new TrapezoidProfile.Constraints(
-                DriveConstants.kMaxTurnRateDegPerS,
-                DriveConstants.kMaxTurnAccelerationDegPerSSquared));
+                DriveConstants.kMaxMetersPerS,
+                DriveConstants.kMaxMetersPerSSquared));
 
   private static boolean m_shuffleboardLoaded = false;
   private PhotonApril m_photon;
@@ -32,10 +32,10 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
         m_PID,
         // Close loop on vision target
         photon::getDistance,
-        // Set reference to target
-        0.0,
+        // Set reference to target: 1 meter
+        1.0,
         // Pipe output to turn robot
-        (output, setpoint) -> drive.drive(0, 0, output, false), 
+        (output, setpoint) -> drive.drive(-output, 0, 0, false), 
         // Require the drive
         drive);
 
@@ -43,15 +43,15 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
-    getController().setTolerance(DriveConstants.kDriveToleranceDist);
+    getController().setTolerance(DriveConstants.kDriveAprilToleranceDist);
       
       // Add the PID to dashboard
     if (!m_shuffleboardLoaded) {
       ShuffleboardTab turnTab = Shuffleboard.getTab("Drivebase");
-      turnTab.add("Rotate PID", m_PID);
+      turnTab.add("April Distance PID", m_PID);
       m_shuffleboardLoaded = true;  // so we do this only once no matter how many instances are created
     }
-    System.out.println("new turn to april command created");
+    System.out.println("new distance to april command created");
   
   }
 

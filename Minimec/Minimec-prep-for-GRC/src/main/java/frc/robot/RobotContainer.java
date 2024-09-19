@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.DistanceToAprilTag;
 import frc.robot.commands.TurnAndStrafeToAprilTag;
 import frc.robot.commands.TurnOrStrafeAndDistancePhoton;
 import frc.robot.commands.UpdateBestPhotonAprCommand;
@@ -120,17 +121,14 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kA.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
 
-    // reset encoders when yellow-Y pressed
-    // new JoystickButton(m_driverController, Button.kY.value)
-    //     .onTrue(new InstantCommand(() -> m_robotDrive.resetEncoders()));
-
     // update info from photon when yellow-Y pressed
     new JoystickButton(m_driverController, Button.kY.value)
         .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
 
     //  rotate to note when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
-        .whileTrue(new RepeatCommand(new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive)));
+        // .whileTrue(new RepeatCommand(new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive)));
+        .whileTrue(new RepeatCommand(new DistanceToAprilTag(m_photonApril, m_robotDrive)));
 
     // distance  to note when red-B pressed
     // new JoystickButton(m_driverController, Button.kB.value)
