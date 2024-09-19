@@ -57,6 +57,12 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
+  // sequences for demos
+  private final SequentialCommandGroup cmdDistanceTurnStrafeToAprilTag = new SequentialCommandGroup(
+    new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive),
+    new DistanceToAprilTag(m_photonApril, m_robotDrive)
+  );
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
@@ -125,10 +131,11 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kY.value)
         .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
 
-    //  rotate to note when blue-X pressed
+    //  rotate and move to april tag when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
         // .whileTrue(new RepeatCommand(new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive)));
-        .whileTrue(new RepeatCommand(new DistanceToAprilTag(m_photonApril, m_robotDrive)));
+        // .whileTrue(new RepeatCommand(new DistanceToAprilTag(m_photonApril, m_robotDrive)));
+         .whileTrue(new RepeatCommand(cmdDistanceTurnStrafeToAprilTag));
 
     // distance  to note when red-B pressed
     // new JoystickButton(m_driverController, Button.kB.value)

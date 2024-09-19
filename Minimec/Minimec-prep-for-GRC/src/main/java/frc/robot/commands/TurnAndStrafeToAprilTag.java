@@ -28,7 +28,7 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
 
   // strafe
   private static ProfiledPIDController m_PID2 = new ProfiledPIDController(
-    DriveConstants.kYawAprilP, DriveConstants.kYawAprilI, DriveConstants.kYawAprilD,
+    DriveConstants.kSkewAprilP, DriveConstants.kSkewAprilI, DriveConstants.kSkewAprilD,
     new TrapezoidProfile.Constraints(
                 DriveConstants.kMaxTurnRateDegPerS,
                 DriveConstants.kMaxTurnAccelerationDegPerSSquared));
@@ -64,9 +64,9 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
     getController1()
-        .setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
+        .setTolerance(DriveConstants.kTurnToleranceRad, DriveConstants.kTurnRateToleranceRadPerS);
     getController2()
-        .setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
+        .setTolerance(DriveConstants.kTurnToleranceRad, DriveConstants.kTurnRateToleranceRadPerS);
             
         // Add the PID to dashboard
     if (!m_shuffleboardLoaded) {
