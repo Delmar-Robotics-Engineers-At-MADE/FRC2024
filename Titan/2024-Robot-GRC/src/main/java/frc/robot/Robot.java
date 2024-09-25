@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,6 +38,7 @@ public class Robot extends TimedRobot {
     // UsbCamera camera = CameraServer.startAutomaticCapture();
     // Shuffleboard.getTab("match").add(camera);
     this.blinkin = m_robotContainer.getBlinkin();
+    blinkin.setAllianceColor();
     try {
       Shuffleboard.getTab("match").addCamera("camera", "Microsoft_LifeCam_HD-3000", "https://photonvision.local:1181/");
     } catch (IllegalArgumentException e) {}

@@ -35,8 +35,18 @@ public class Blinkin extends SubsystemBase {
   }
 
   public void setColour(double input) {
+    System.out.println("Blinkin setting color to: " + input);
     one.set(input);
     two.set(input);
+  }
+
+  public void setAllianceColor() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if(alliance.get() == Alliance.Red) {
+      setColour(LEDConstants.red);
+    } else {
+      setColour(LEDConstants.blue);
+    }
   }
 
   public Command set(double colour) {

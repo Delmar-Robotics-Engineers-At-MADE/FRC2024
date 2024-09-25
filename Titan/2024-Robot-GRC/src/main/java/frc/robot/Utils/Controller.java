@@ -15,71 +15,71 @@ public class Controller extends CommandXboxController {
         super(id);
     }
 
-    public Trigger armAmp() {
+    public Trigger myRightTriggerLight() { // was armAmp
         return new Trigger(()-> (getRightTriggerAxis() > 0.1));
     }
 
-    public Trigger armSpeaker() {
+    public Trigger myLeftTriggerLight() { // was armSpeaker
         return new Trigger(()-> (getLeftTriggerAxis() > 0.1));
     }
 
-    public Trigger fireAmp() {
+    public Trigger myRightTriggerHeavy() { // was fireAmp
         return rightTrigger(0.8);
     }
 
-    public Trigger fireSpeaker() {
+    public Trigger myLeftTriggerHeavy() { // was fireSpeaker
         return leftTrigger(0.8);
     }
 
-    public Trigger fpvIntake() {
+    public Trigger myLeftBumper() { // was fpvIntake
         return leftBumper().debounce(0.1);
     }
 
-    public Trigger intake() {
+    public Trigger myRightBumper() { // was intake
         return rightBumper();
     }
 
-    public Trigger forceFeed() {
+    public Trigger myStart() { // was forceFeed
         return start();
     }
 
-    public Trigger forceReverse() {
+    public Trigger myBack() { // was forceReverse
         return back();
     }
 
-    public Trigger shuttle() {
+    public Trigger myB() { // was shuttle
         return b();
     }
 
-    public Trigger xMode() {
+    public Trigger myX() { // was xMode
         return x();
     }
 
-    public Trigger lUp() {
+    public Trigger myPOVUp() { // was lUp
         return povUp();
     }
 
-    public Trigger lDown() {
+    public Trigger myPOVDown() { // lDown
         return povDown();
     }
 
-    public Trigger rUp() {
+    public Trigger myY() { // was rUp
         return y();
     }
 
-    public Trigger rDown() {
+    public Trigger myA() { // was rDown
         return a();
     }
 
-    public Trigger resetGyro() {
-        return y().and(rightBumper());
+    public Trigger myRightStick() { // was resetGyro
+        return rightStick();
     }
 
-    public Trigger stow() {
+    public Trigger myLeftAndRightBumper() { // was stow
         return leftBumper().and(rightBumper());
     }
 
-    public Trigger homeClimbers() {
+    public Trigger myPOVLeft() { // was homeClimbers
         return povLeft();
     }
 }

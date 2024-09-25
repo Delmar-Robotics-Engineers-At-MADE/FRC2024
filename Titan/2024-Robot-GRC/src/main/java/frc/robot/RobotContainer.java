@@ -5,16 +5,19 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.IntakeConstants;
-// import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Utils.Dashboard;
 import frc.robot.Utils.Toolkit;
+import frc.robot.Utils.Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Climber;
@@ -30,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -49,7 +53,6 @@ import frc.robot.Commands.Intake.IntakeNoteAutomatic;
 import frc.robot.Commands.Intake.RunIntakeOpenLoop;
 import frc.robot.Commands.Shooter.AccelerateShooter;
 import frc.robot.Commands.Shooter.RunShooterEternal;
-import frc.robot.Utils.Controller;
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -77,8 +80,15 @@ public class RobotContainer {
   private boolean override = false;
 
   // Command Groups
-  ParallelCommandGroup intake = new ParallelCommandGroup(
+
+  // intake with lights going grean after success
+  SequentialCommandGroup intakeAndSignal = new SequentialCommandGroup(
     new IntakeNoteAutomatic(m_intake),
+    new InstantCommand(() ->  blinkin.setColour(LEDConstants.green))); // blinkin.green());
+
+  ParallelCommandGroup intake = new ParallelCommandGroup(
+    // new IntakeNoteAutomatic(m_intake),
+    intakeAndSignal,
     new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)
   );
 
@@ -230,37 +240,37 @@ public class RobotContainer {
 
     // The left stick controls translation of the robot.
     // Turning is controlled by the X axis of the right stick.
-    c0.fpvIntake().whileTrue(
+    c0.leftBumper().debounce(0.1).whileTrue(
     new RunCommand(
       () -> m_robotDrive.drive(
           -MathUtil.applyDeadband(c0.getLeftY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
           -MathUtil.applyDeadband(c0.getLeftX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
           -MathUtil.applyDeadband(c0.getRightX()*DriverConstants.kMYawSpeed, 0.05),
-        false,true), m_robotDrive));
+        true,true), m_robotDrive));
 
-    c1.fpvIntake().whileTrue(
+    c1.leftBumper().debounce(0.1).whileTrue(
     new RunCommand(
       () -> m_robotDrive.drive(
           -MathUtil.applyDeadband(c1.getRightY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
           -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
           -MathUtil.applyDeadband(c1.getLeftX()*DriverConstants.kMYawSpeed, 0.05),
-        false,true), m_robotDrive));
+        true,true), m_robotDrive));
 
-    c0.leftStick().toggleOnTrue(
+    c0.leftStick().whileTrue(
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(c0.getLeftY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(c0.getLeftX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c0.getLeftX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
           -MathUtil.applyDeadband(c0.getRightX()*DriverConstants.kYawSpeed, 0.05),
-          true, true), m_robotDrive));
+          false, true), m_robotDrive));
 
-    c1.leftStick().toggleOnTrue(
+    c1.leftStick().whileTrue(
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(c1.getRightY()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kDefaultSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getRightY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
           -MathUtil.applyDeadband(c1.getLeftX()*DriverConstants.kYawSpeed, 0.05),
-          true, true), m_robotDrive));
+          false, true), m_robotDrive));
 
     // Subsystem Default Commands
     //m_intake.setDefaultCommand(new HoldIntake(m_intake));
@@ -284,49 +294,49 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    c0.xMode().or(c1.xMode())
+    c0.myX().or(c1.myX())
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
 
-    c0.fpvIntake().or(c1.fpvIntake()).whileTrue(new ParallelCommandGroup(
+    c0.myLeftBumper().or(c1.myLeftBumper()).whileTrue(new ParallelCommandGroup(
       new IntakeNoteAutomatic(m_intake),
       new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
-    c0.intake().or(c1.intake()).whileTrue(new ParallelCommandGroup(
+    c0.myRightBumper().or(c1.myRightBumper()).whileTrue(new ParallelCommandGroup(
       new IntakeNoteAutomatic(m_intake),
       new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
 
-    c0.stow().or(c1.stow()).toggleOnTrue(new SequentialCommandGroup(
+    c0.myLeftAndRightBumper().or(c1.myLeftAndRightBumper()).toggleOnTrue(new SequentialCommandGroup(
       new RunArmClosedLoop(m_arm, ArmConstants.kStowPos),
       new HoldArm(m_arm)
     ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    c0.resetGyro().or(c1.resetGyro()).onTrue(
+    c0.myRightStick().or(c1.myRightStick()).onTrue(
       new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive)
     );
 
-    c0.forceFeed().or(c1.forceFeed()).whileTrue(new ForceFeed(m_intake, m_shooter));
-    c0.forceReverse().or(c1.forceReverse()).whileTrue(new ForceReverse(m_intake, m_shooter));
+    c0.myStart().or(c1.myStart()).whileTrue(new ForceFeed(m_intake, m_shooter));
+    c0.myBack().or(c1.myBack()).whileTrue(new ForceReverse(m_intake, m_shooter));
 
-    c0.homeClimbers().or(c1.homeClimbers()).whileTrue(homeClimbers);
-    c0.rUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, true));
-    c0.rDown().or(c1.rDown()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, false));
-    c0.lUp().or(c1.lUp()).whileTrue(new RunClimberNormalLaw(m_portClimber, true));
-    c0.lDown().or(c1.lDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
+    c0.myPOVLeft().or(c1.myPOVLeft()).whileTrue(homeClimbers);
+    c0.myY().or(c1.myY()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, true));
+    c0.myA().or(c1.myA()).whileTrue(new RunClimberNormalLaw(m_starboardClimber, false));
+    c0.myPOVUp().or(c1.myPOVUp()).whileTrue(new RunClimberNormalLaw(m_portClimber, true));
+    c0.myPOVDown().or(c1.myPOVDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
 
-    c0.armAmp().or(c1.armAmp()).whileTrue(new ParallelCommandGroup(
+    c0.myRightTriggerLight().or(c1.myRightTriggerLight()).whileTrue(new ParallelCommandGroup(
       m_shooter.accelerate(ShooterConstants.kAmpSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
 
-    c0.armSpeaker().or(c1.armSpeaker()).whileTrue(new ParallelCommandGroup(
+    c0.myLeftTriggerLight().or(c1.myLeftTriggerLight()).whileTrue(new ParallelCommandGroup(
       m_shooter.accelerate(ShooterConstants.kSubwooferSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
 
 
-    c0.fireAmp().or(c1.fireAmp()).whileTrue(new ParallelCommandGroup(
+    c0.myRightTriggerHeavy().or(c1.myRightTriggerHeavy()).whileTrue(new ParallelCommandGroup(
       m_intake.feed()
     ));
-    c0.shuttle().or(c1.shuttle()).whileTrue(fireShuttle());
-    c0.fireSpeaker().or(c1.fireSpeaker()).whileTrue(new ConditionalCommand(
+    c0.myB().or(c1.myB()).whileTrue(fireShuttle());
+    c0.myLeftTriggerHeavy().or(c1.myLeftTriggerHeavy()).whileTrue(new ConditionalCommand(
       m_intake.feed(), new HoldIntake(m_intake), m_shooter::isSubwooferSpeed));
   }
     
