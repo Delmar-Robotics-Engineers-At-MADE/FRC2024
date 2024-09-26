@@ -84,7 +84,7 @@ public class RobotContainer {
   // intake with lights going grean after success
   SequentialCommandGroup intakeAndSignal = new SequentialCommandGroup(
     new IntakeNoteAutomatic(m_intake),
-    new InstantCommand(() ->  blinkin.setColour(LEDConstants.green))); // blinkin.green());
+    blinkin.indCapture()); 
 
   ParallelCommandGroup intake = new ParallelCommandGroup(
     // new IntakeNoteAutomatic(m_intake),

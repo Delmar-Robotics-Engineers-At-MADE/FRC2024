@@ -29,6 +29,7 @@ import frc.robot.commands.UpdateBestPhotonAprCommand;
 import frc.robot.commands.TurnToAprilTag;
 import frc.robot.commands.TurnToNoteLimelight;
 import frc.robot.commands.UpdateBestLimelightCommand;
+import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonObjects;
 import frc.robot.subsystems.LimelightSubsystem;
@@ -55,6 +56,7 @@ public class RobotContainer {
   private final PhotonApril m_photonApril = new PhotonApril(null);
   private final LimelightSubsystem m_limelight = new LimelightSubsystem();
   private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_photonObj, m_photonApril);
+  private final Blinkin blinkin = new Blinkin();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -137,7 +139,9 @@ public class RobotContainer {
     // update info from photon when yellow-Y pressed
     new JoystickButton(m_driverController, Button.kY.value)
         // .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
-        .whileTrue(new RepeatCommand(new UpdateBestLimelightCommand(m_limelight)));
+        // .whileTrue(new RepeatCommand(new UpdateBestLimelightCommand(m_limelight)));
+        .onTrue(blinkin.indCapture())
+        .onFalse(blinkin.setAllianceColorCmd());
 
     //  rotate and move to april tag when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
@@ -213,4 +217,9 @@ public class RobotContainer {
         mecanumControllerCommand,
         new InstantCommand(() -> m_robotDrive.drive(0, 0, 0, false)));
   }
+
+  public Blinkin getBlinkin() {
+    return blinkin;
+  }
+
 }
