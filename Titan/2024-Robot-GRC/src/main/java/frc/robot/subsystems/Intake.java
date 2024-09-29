@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Commands.Intake.HoldIntake;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.ShooterConstants;
 
 
@@ -28,8 +29,10 @@ public class Intake extends SubsystemBase{
     private final PIDController posPID;
     private final SimpleMotorFeedforward ff;
     private final TimeOfFlight tof;
+    private final Blinkin m_blinkin;
 
-    public Intake(int intakeID, int portSensorDIO, int starboardSensorDIO) {
+    // constructor
+    public Intake(int intakeID, int portSensorDIO, int starboardSensorDIO, Blinkin blinkin) {
         intake = new CANSparkMax(intakeID, MotorType.kBrushless);
         intake.restoreFactoryDefaults();
 
@@ -50,6 +53,8 @@ public class Intake extends SubsystemBase{
 
         tof = new TimeOfFlight(1);
         tof.setRangingMode(RangingMode.Short, starboardSensorDIO);
+
+        m_blinkin = blinkin;
     }
 
     public void hold(double pos) {
@@ -58,6 +63,8 @@ public class Intake extends SubsystemBase{
 
     public void halt() {
         intake.set(0);
+        if (isNote()) {m_blinkin.setColour(LEDConstants.green);}
+        else {m_blinkin.setAllianceColor();}
     }
 
     public void runAtVelocity(double setpoint) {
@@ -66,6 +73,8 @@ public class Intake extends SubsystemBase{
 
     public void runOpenLoop(double supplier) {
         intake.set(supplier);
+        System.out.println("Running intake open loop, so should be setting blinkin to alliance color, speed: " + supplier);
+        if (supplier != 0.0) {m_blinkin.setAllianceColor();}
     }
 
     public Command feed() {
@@ -80,9 +89,11 @@ public class Intake extends SubsystemBase{
             else {
                 intake.set((velPID.calculate(getVelocity(), IntakeConstants.kIntakeCaptureSpeed) + ff.calculate(IntakeConstants.kIntakeCaptureSpeed))/11000);           
             }
+            m_blinkin.setAllianceColor();
         }
         else {
             intake.set(0);
+            m_blinkin.setColour(LEDConstants.green);
         }
     }
 

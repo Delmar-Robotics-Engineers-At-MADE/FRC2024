@@ -63,11 +63,11 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Arm m_arm = new Arm(ArmConstants.kLeftID, ArmConstants.kRightID);
-  private final Intake m_intake = new Intake(IntakeConstants.kIntakeID, IntakeConstants.kPortSensorDIOPort, IntakeConstants.kStarboardSensorDIOPort);
+  private final Blinkin blinkin = new Blinkin();
+  private final Intake m_intake = new Intake(IntakeConstants.kIntakeID, IntakeConstants.kPortSensorDIOPort, IntakeConstants.kStarboardSensorDIOPort, blinkin);
   private final Shooter m_shooter = new Shooter(ShooterConstants.kTopID, ShooterConstants.kBottomID);
   private final Climber m_portClimber = new Climber(ClimberConstants.kPortID, ClimberConstants.kPortDIO, true);
   private final Climber m_starboardClimber = new Climber(ClimberConstants.kStarboardID, ClimberConstants.kStarboardDIO, false);
-  private final Blinkin blinkin = new Blinkin();
 
   // The driver's controller
   private Controller c0 = new Controller(0);
@@ -79,18 +79,20 @@ public class RobotContainer {
 
   private boolean override = false;
 
-  // Command Groups
+  // ************* these commands used only by autonomous
+
+  ParallelCommandGroup intake = new ParallelCommandGroup(
+    new IntakeNoteAutomatic(m_intake),
+    new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)
+  );
+
+  // ************* these commands used by teleop
 
   // intake with lights going grean after success
   SequentialCommandGroup intakeAndSignal = new SequentialCommandGroup(
     new IntakeNoteAutomatic(m_intake),
-    blinkin.indCapture()); 
-
-  ParallelCommandGroup intake = new ParallelCommandGroup(
-    // new IntakeNoteAutomatic(m_intake),
-    intakeAndSignal,
-    new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)
-  );
+    new InstantCommand(() ->  blinkin.setColour(LEDConstants.green)) // blinkin.green());
+    );
 
   ParallelCommandGroup homeClimbers = new ParallelCommandGroup(
     new HomeClimber(m_portClimber),
@@ -105,7 +107,8 @@ public class RobotContainer {
   );
 
 
-  // Firing Sequences
+  // ************* unused commands
+
   SequentialCommandGroup subwooferFire = new SequentialCommandGroup(
         Toolkit.sout("sFire init"),
           new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos),
@@ -118,7 +121,6 @@ public class RobotContainer {
         ),
         Toolkit.sout("sFire end")
       );
-
   SequentialCommandGroup distanceFire = new SequentialCommandGroup(
         Toolkit.sout("Fire init"),
           new RunArmClosedLoop(m_arm, ArmConstants.k3mPos),
@@ -131,7 +133,6 @@ public class RobotContainer {
         ),
         Toolkit.sout("Fire end")
       );
-
   SequentialCommandGroup shuttleFire = new SequentialCommandGroup(
         Toolkit.sout("Fire init"),
           new RunArmClosedLoop(m_arm, ArmConstants.kShuttlePos),
@@ -144,8 +145,6 @@ public class RobotContainer {
         ),
         Toolkit.sout("Fire end")
       );
-
-
   SequentialCommandGroup angleFire = new SequentialCommandGroup(
         Toolkit.sout("Fire init"),
           new RunArmClosedLoop(m_arm, ArmConstants.kAnglePos),
@@ -158,7 +157,6 @@ public class RobotContainer {
         ),
         Toolkit.sout("Fire end")
       );
-
   SequentialCommandGroup backAmp = new SequentialCommandGroup(
         Toolkit.sout("AMP init"),
           new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos),
@@ -171,7 +169,6 @@ public class RobotContainer {
         ),
         Toolkit.sout("Amp end")
       );
-
   SequentialCommandGroup frontAmp = new SequentialCommandGroup(
         Toolkit.sout("AMP init"),
         new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos),
@@ -301,6 +298,7 @@ public class RobotContainer {
 
     c0.myLeftBumper().or(c1.myLeftBumper()).whileTrue(new ParallelCommandGroup(
       new IntakeNoteAutomatic(m_intake),
+      // intakeAndSignal,
       new RunArmClosedLoop(m_arm, ArmConstants.kIntakePos)));
     c0.myRightBumper().or(c1.myRightBumper()).whileTrue(new ParallelCommandGroup(
       new IntakeNoteAutomatic(m_intake),

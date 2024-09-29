@@ -28,10 +28,12 @@ public class Blinkin extends SubsystemBase {
   }
   private final Spark one;
   private final Spark two;
+  private final Alliance m_allianceColor;
   /** Creates a new Blinkin. */
   public Blinkin() {
     one = new Spark(0);
     two = new Spark(1);
+    m_allianceColor = DriverStation.getAlliance().get();
   }
 
   public void setColour(double input) {
@@ -41,8 +43,8 @@ public class Blinkin extends SubsystemBase {
   }
 
   public void setAllianceColor() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    if(alliance.get() == Alliance.Red) {
+    
+    if(m_allianceColor == Alliance.Red) {
       setColour(LEDConstants.red);
     } else {
       setColour(LEDConstants.blue);

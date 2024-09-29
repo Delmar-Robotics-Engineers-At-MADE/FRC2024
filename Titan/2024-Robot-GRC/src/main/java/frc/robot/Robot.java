@@ -40,8 +40,11 @@ public class Robot extends TimedRobot {
     this.blinkin = m_robotContainer.getBlinkin();
     blinkin.setAllianceColor();
     try {
-      Shuffleboard.getTab("match").addCamera("camera", "Microsoft_LifeCam_HD-3000", "https://photonvision.local:1181/");
-    } catch (IllegalArgumentException e) {}
+      Shuffleboard.getTab("match").addCamera("camera", "Limelight", "http://10.80.77.111:5800/");
+      System.out.println("******************** Added camera to dashboard");
+    } catch (IllegalArgumentException e) {
+      System.out.println("******************** FAILED to add camera to dashboard");
+    }
 
   }
 
