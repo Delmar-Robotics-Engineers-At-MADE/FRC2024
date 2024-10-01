@@ -64,7 +64,8 @@ public class RobotContainer {
   // sequences for demos
   private final SequentialCommandGroup cmdDistanceTurnStrafeToAprilTag = new SequentialCommandGroup(
     new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive),
-    new DistanceToAprilTag(m_photonApril, m_robotDrive)
+    new DistanceToAprilTag(m_photonApril, m_robotDrive),
+    m_robotDrive.getDriveStraightCommand(3.0)
   );
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -140,14 +141,16 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kY.value)
         // .whileTrue(new RepeatCommand(new UpdateBestPhotonAprCommand(m_photonApril)));
         // .whileTrue(new RepeatCommand(new UpdateBestLimelightCommand(m_limelight)));
-        .onTrue(blinkin.indCapture())
-        .onFalse(blinkin.setAllianceColorCmd());
+        // .onTrue(blinkin.indCapture())
+        // .onFalse(blinkin.setAllianceColorCmd());
+        // .onTrue (getAutonomousCommand());
+        .onTrue (m_robotDrive.getDriveStraightCommand(3.0));
 
     //  rotate and move to april tag when blue-X pressed
     new JoystickButton(m_driverController, Button.kX.value)
         // .whileTrue(new RepeatCommand(new TurnAndStrafeToAprilTag(m_photonApril, m_robotDrive)));
         // .whileTrue(new RepeatCommand(new DistanceToAprilTag(m_photonApril, m_robotDrive)));
-         .whileTrue(new RepeatCommand(cmdDistanceTurnStrafeToAprilTag));
+        .whileTrue(cmdDistanceTurnStrafeToAprilTag);
 
     // distance and rotate to note when red-B pressed
     new JoystickButton(m_driverController, Button.kB.value)

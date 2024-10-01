@@ -4,21 +4,34 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
+
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.util.sendable.SendableRegistry;
 // import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 //import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 class myAHRS extends AHRS {
@@ -270,4 +283,61 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return -m_gyro.getRate();
   }
+
+
+  // this is copied from the getAutonomousCommand of the Mecanum command example
+  public Command getDriveStraightCommand(double distance) {
+    // Create config for trajectory
+    TrajectoryConfig config =
+        new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(DriveConstants.kDriveKinematics);
+
+    // An example trajectory to follow. All units in meters.
+    Trajectory exampleTrajectory =
+        TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // interior waypoints are apparently required
+            List.of(new Translation2d(1, 0), new Translation2d(2, 0)),  // assuming distance is at least .2, or this doesn't make sense
+            // End x meters straight ahead of where we started, facing forward
+            new Pose2d(distance, 0, new Rotation2d(0)),
+            config);
+
+    MecanumControllerCommand mecanumControllerCommand =
+        new MecanumControllerCommand(
+            exampleTrajectory,
+            this::getPose,
+            DriveConstants.kFeedforward,
+            DriveConstants.kDriveKinematics,
+
+            // Position controllers
+            new PIDController(AutoConstants.kPXController, 0, 0),
+            new PIDController(AutoConstants.kPYController, 0, 0),
+            new ProfiledPIDController(
+                AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints),
+
+            // Needed for normalizing wheel speeds
+            AutoConstants.kMaxSpeedMetersPerSecond,
+
+            // Velocity PID's
+            new PIDController(DriveConstants.kPFrontLeftVel, 0, 0),
+            new PIDController(DriveConstants.kPRearLeftVel, 0, 0),
+            new PIDController(DriveConstants.kPFrontRightVel, 0, 0),
+            new PIDController(DriveConstants.kPRearRightVel, 0, 0),
+            this::getCurrentWheelSpeeds,
+            this::setDriveMotorControllersVolts, // Consumer for the output motor voltages
+            this);
+
+    // Reset odometry to the initial pose of the trajectory, run path following
+    // command, then stop at the end.
+    return Commands.sequence(
+        new InstantCommand(() -> this.resetOdometry(exampleTrajectory.getInitialPose())),
+        mecanumControllerCommand,
+        new InstantCommand(() -> this.drive(0, 0, 0, false)));
+  }
+
+
 }

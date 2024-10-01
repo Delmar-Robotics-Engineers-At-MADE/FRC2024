@@ -58,13 +58,14 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
   @Override
   public void execute() {
     m_photon.updateBestTag();
+    System.out.println("distance to april error: " + m_PID.getPositionError());
     super.execute();
   }  
 
   @Override
   public boolean isFinished() {
     // End when the controller is at the reference.
-    return getController().atGoal() || !m_photon.hasTarget(); // end if we are at goal, or if we lost target
+    return getController().atGoal() && m_photon.hasTarget() ; // end if we are at goal; keep trying if no target
   }
 
 }
