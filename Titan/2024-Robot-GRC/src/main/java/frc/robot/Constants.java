@@ -73,6 +73,39 @@ public final class Constants {
     public static final double kYawRateToleranceDegPerS = 10;
     public static final double kLongToleranceMeter = 0.1;
     public static final double kLatToleranceMeter = 0.1;
+
+    // react to April Tag yaw
+    public static final double kYawAprilP = 0.8;
+    public static final double kYawAprilI = 0;
+    public static final double kYawAprilD = 0.05;  
+    
+    // react to Limelight yaw
+    public static final double kYawLimeP = 0.04;
+    public static final double kYawLimeI = 0;
+    public static final double kYawLimeD = 0.001;  
+    public static final double kTurnToleranceLime = .1;
+    public static final double kTurnRateToleranceLimesPerS = 1; // meters (X of photon view) per second
+    
+    // react to April Tag skew
+    public static final double kSkewAprilP = 1.2;
+    public static final double kSkewAprilI = 0;
+    public static final double kSkewAprilD = 0.01;  
+    
+    // turn rate limits, only meaningful when error measurement is angle
+    public static final double kMaxTurnRateDegPerS = 180;
+    public static final double kMaxTurnAccelerationDegPerSSquared = 300;
+    public static final double kTurnToleranceDeg = 5;
+    public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
+
+    public static final double kMaxTurnRateRadPerS = 2 * Math.PI;
+    public static final double kMaxTurnAccelerationRadPerSSquared = 2 * Math.PI;
+    public static final double kTurnToleranceRad = Math.PI/30;
+    public static final double kTurnRateToleranceRadPerS = Math.PI/2; // degrees per second
+
+    public static final double kMaxTurnRateMPerS = 2;
+    public static final double kMaxTurnAccelerationMPerSSquared = 4;
+    public static final double kTurnToleranceM = .1;
+    public static final double kTurnRateToleranceMPerS = 1; // meters (X of photon view) per second
   }
 
   public static final class PIDDriveConstants {

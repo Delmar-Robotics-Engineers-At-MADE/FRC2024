@@ -23,6 +23,7 @@ import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.PhotonApril;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -46,7 +47,7 @@ import frc.robot.Commands.CMDGroup.ForceReverse;
 import frc.robot.Commands.Climbers.HoldClimber;
 import frc.robot.Commands.Climbers.HomeClimber;
 import frc.robot.Commands.Climbers.RunClimberNormalLaw;
-
+import frc.robot.Commands.Drive.TurnAndStrafeToAprilTag;
 import frc.robot.Commands.Intake.Feed;
 import frc.robot.Commands.Intake.HoldIntake;
 import frc.robot.Commands.Intake.IntakeNoteAutomatic;
@@ -68,6 +69,8 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter(ShooterConstants.kTopID, ShooterConstants.kBottomID);
   private final Climber m_portClimber = new Climber(ClimberConstants.kPortID, ClimberConstants.kPortDIO, true);
   private final Climber m_starboardClimber = new Climber(ClimberConstants.kStarboardID, ClimberConstants.kStarboardDIO, false);
+
+  private final PhotonApril m_photonApril = new PhotonApril(null);
 
   // The driver's controller
   private Controller c0 = new Controller(0);
@@ -325,10 +328,13 @@ public class RobotContainer {
       m_shooter.accelerate(ShooterConstants.kAmpSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
 
-    c0.myLeftTriggerLight().or(c1.myLeftTriggerLight()).whileTrue(new ParallelCommandGroup(
+    // c0.myLeftTriggerLight().or(c1.myLeftTriggerLight()).whileTrue(new ParallelCommandGroup(
+    c0.myLeftTriggerLight().whileTrue(new ParallelCommandGroup(
       m_shooter.accelerate(ShooterConstants.kSubwooferSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
 
+    // for operator, left trigger will do auto score routine
+    c1.myLeftTriggerLight().whileTrue(new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive));
 
     c0.myRightTriggerHeavy().or(c1.myRightTriggerHeavy()).whileTrue(new ParallelCommandGroup(
       m_intake.feed()
