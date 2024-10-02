@@ -75,9 +75,10 @@ public final class Constants {
     public static final double kLatToleranceMeter = 0.1;
 
     // react to April Tag yaw
-    public static final double kYawAprilP = 0.8;
+    public static final double kYawAprilP = 0.3;
     public static final double kYawAprilI = 0;
     public static final double kYawAprilD = 0.05;  
+    public static final double kYawAprilZero = 0.0; // 1.2;
     
     // react to Limelight yaw
     public static final double kYawLimeP = 0.04;
@@ -87,19 +88,29 @@ public final class Constants {
     public static final double kTurnRateToleranceLimesPerS = 1; // meters (X of photon view) per second
     
     // react to April Tag skew
-    public static final double kSkewAprilP = 1.2;
-    public static final double kSkewAprilI = 0;
+    public static final double kSkewAprilP = 0.5;
+    public static final double kSkewAprilI = 0.008;
     public static final double kSkewAprilD = 0.01;  
+    public static final double kSkewAprilZero = Math.PI;  
+
+    // distance to April Tag
+    public static final double kDriveAprilP = 1;
+    public static final double kDriveAprilI = 0.0;
+    public static final double kDriveAprilD = 0.1;
+    public static final double kDriveAprilToleranceDist = 0.2;  // in meters
+    public static final double kMaxMetersPerS = 100;  // we don't really need this to be profiled, so set high number
+    public static final double kMaxMetersPerSSquared = 100;
+    public static final double kDriveAprilTarget = 2;
     
     // turn rate limits, only meaningful when error measurement is angle
     public static final double kMaxTurnRateDegPerS = 180;
     public static final double kMaxTurnAccelerationDegPerSSquared = 300;
-    public static final double kTurnToleranceDeg = 5;
+    public static final double kTurnToleranceDeg = 2;
     public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
 
     public static final double kMaxTurnRateRadPerS = 2 * Math.PI;
     public static final double kMaxTurnAccelerationRadPerSSquared = 2 * Math.PI;
-    public static final double kTurnToleranceRad = Math.PI/30;
+    public static final double kTurnToleranceRad = Math.PI/60;
     public static final double kTurnRateToleranceRadPerS = Math.PI/2; // degrees per second
 
     public static final double kMaxTurnRateMPerS = 2;

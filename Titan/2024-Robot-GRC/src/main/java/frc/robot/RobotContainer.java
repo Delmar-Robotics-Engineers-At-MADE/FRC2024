@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LEDConstants;
@@ -47,7 +48,9 @@ import frc.robot.Commands.CMDGroup.ForceReverse;
 import frc.robot.Commands.Climbers.HoldClimber;
 import frc.robot.Commands.Climbers.HomeClimber;
 import frc.robot.Commands.Climbers.RunClimberNormalLaw;
+import frc.robot.Commands.Drive.DistanceToAprilTag;
 import frc.robot.Commands.Drive.TurnAndStrafeToAprilTag;
+import frc.robot.Commands.Drive.TurnToAprilTag;
 import frc.robot.Commands.Intake.Feed;
 import frc.robot.Commands.Intake.HoldIntake;
 import frc.robot.Commands.Intake.IntakeNoteAutomatic;
@@ -324,17 +327,26 @@ public class RobotContainer {
     c0.myPOVUp().or(c1.myPOVUp()).whileTrue(new RunClimberNormalLaw(m_portClimber, true));
     c0.myPOVDown().or(c1.myPOVDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
 
-    c0.myRightTriggerLight().or(c1.myRightTriggerLight()).whileTrue(new ParallelCommandGroup(
+    // c0.myRightTriggerLight().or(c1.myRightTriggerLight()).whileTrue(new ParallelCommandGroup(
+    // driver only
+    c0.myRightTriggerLight().whileTrue(new ParallelCommandGroup(
       m_shooter.accelerate(ShooterConstants.kAmpSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
 
-    // c0.myLeftTriggerLight().or(c1.myLeftTriggerLight()).whileTrue(new ParallelCommandGroup(
-    c0.myLeftTriggerLight().whileTrue(new ParallelCommandGroup(
+    c0.myLeftTriggerLight().or(c1.myLeftTriggerLight()).whileTrue(new ParallelCommandGroup(
       m_shooter.accelerate(ShooterConstants.kSubwooferSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
 
-    // for operator, left trigger will do auto score routine
-    c1.myLeftTriggerLight().whileTrue(new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive));
+    // for operator, right trigger will do auto score routine
+//    c1.myLeftTriggerLight().whileTrue(new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive));
+//     c1.myLeftTriggerLight().whileTrue(new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive));
+    c1.myRightTriggerLight().whileTrue(new SequentialCommandGroup(
+      new TurnToAprilTag(m_photonApril, m_robotDrive),
+      new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
+      new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive),
+      new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
+      new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
+    ));
 
     c0.myRightTriggerHeavy().or(c1.myRightTriggerHeavy()).whileTrue(new ParallelCommandGroup(
       m_intake.feed()

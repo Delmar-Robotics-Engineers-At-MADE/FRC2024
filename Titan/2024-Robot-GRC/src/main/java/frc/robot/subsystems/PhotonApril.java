@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 
 public class PhotonApril extends SubsystemBase {
 
@@ -46,6 +47,10 @@ public class PhotonApril extends SubsystemBase {
       m_bestDistance = target3d.getX();
       m_bestYaw = target3d.getY();
       m_bestSkew = target3d.getRotation().getAngle();
+    } else {
+      m_bestDistance = DriveConstants.kDriveAprilTarget;
+      m_bestYaw = DriveConstants.kYawAprilZero;
+      m_bestSkew = DriveConstants.kSkewAprilZero;
     }
   }
 
