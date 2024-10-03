@@ -353,7 +353,7 @@ public class RobotContainer {
       // ),
       Toolkit.sout("Driving straight"),
       new ParallelCommandGroup(
-        new HoldArm(m_arm),
+        new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos),
         new AccelerateShooter(m_shooter, ShooterConstants.kAmpSpeed),
         m_robotDrive.getDriveStraightCommand()
       ),

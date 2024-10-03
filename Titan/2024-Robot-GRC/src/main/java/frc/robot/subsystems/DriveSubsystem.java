@@ -27,6 +27,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Utils.Toolkit;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -341,7 +342,7 @@ public class DriveSubsystem extends SubsystemBase {
             // interior waypoints are apparently required
             List.of(new Translation2d(.5, .1), new Translation2d(1, .2)),  // assuming distance is at least .2, or this doesn't make sense
             // End x meters straight ahead of where we started, facing forward
-            new Pose2d(1.2, .3, new Rotation2d(Math.PI)),
+            new Pose2d(1.0, .3, new Rotation2d(Math.PI)),
             config);
 
     
@@ -350,14 +351,19 @@ public class DriveSubsystem extends SubsystemBase {
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
       
+    // Position controllers
+    PIDController pidx = new PIDController(AutoConstants.kPXController*.3, 0, 0);
+    PIDController pidy = new PIDController(AutoConstants.kPYController*.3, 0, 0);
+    // pidx.setTolerance(AutoConstants.kTolerance);
+
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
         exampleTrajectory,
         this::getPose, // Functional interface to feed supplier
         DriveConstants.kDriveKinematics,
 
         // Position controllers
-        new PIDController(AutoConstants.kPXController*.3, 0, 0), 
-        new PIDController(AutoConstants.kPYController*.3, 0, 0),
+        pidx, 
+        pidy,
         thetaController,
         this::setModuleStates,
         this);
@@ -365,9 +371,14 @@ public class DriveSubsystem extends SubsystemBase {
     // Reset odometry to the initial pose of the trajectory, run path following
     // command, then stop at the end.
     return Commands.sequence(
+        Toolkit.sout("in drive straight"),
         new InstantCommand(() -> this.resetOdometry(exampleTrajectory.getInitialPose())),
+        Toolkit.sout("in drive straight, starting controller"),
         swerveControllerCommand,
-        new InstantCommand(() -> this.drive(0, 0, 0, false, true)));
+        Toolkit.sout("in drive straight, controller done"),
+        new InstantCommand(() -> this.drive(0, 0, 0, false, true)),
+        Toolkit.sout("in drive straight, all done")
+    );
   }
 
 }
