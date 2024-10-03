@@ -328,8 +328,8 @@ public class RobotContainer {
     c0.myPOVDown().or(c1.myPOVDown()).whileTrue(new RunClimberNormalLaw(m_portClimber, false));
 
     // c0.myRightTriggerLight().or(c1.myRightTriggerLight()).whileTrue(new ParallelCommandGroup(
-    // driver only
-    c0.myRightTriggerLight().whileTrue(new ParallelCommandGroup(
+    // operator only
+    c1.myRightTriggerLight().whileTrue(new ParallelCommandGroup(
       m_shooter.accelerate(ShooterConstants.kAmpSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)));
 
@@ -337,15 +337,16 @@ public class RobotContainer {
       m_shooter.accelerate(ShooterConstants.kSubwooferSpeed),
       new RunArmClosedLoop(m_arm, ArmConstants.kSubwooferPos)));
 
-    // for operator, right trigger will do auto score routine
+    // for driver, right trigger will do auto score routine
 //    c1.myLeftTriggerLight().whileTrue(new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive));
 //     c1.myLeftTriggerLight().whileTrue(new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive));
-    c1.myRightTriggerLight().whileTrue(new SequentialCommandGroup(
-      new TurnToAprilTag(m_photonApril, m_robotDrive),
-      new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
-      new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive),
-      new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
-      new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
+    c0.myRightTriggerLight().whileTrue(new SequentialCommandGroup(
+      // new TurnToAprilTag(m_photonApril, m_robotDrive),
+      // new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
+      // new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive),
+      // new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
+      m_robotDrive.getDriveStraightCommand()
+      // new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
     ));
 
     c0.myRightTriggerHeavy().or(c1.myRightTriggerHeavy()).whileTrue(new ParallelCommandGroup(

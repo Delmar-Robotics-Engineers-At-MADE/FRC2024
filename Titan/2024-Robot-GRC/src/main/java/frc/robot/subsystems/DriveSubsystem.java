@@ -323,25 +323,28 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
     // this is copied from the getAutonomousCommand of the Mecanum command example
-  public Command getDriveStraightCommand(double distance) {
+  public Command getDriveStraightCommand() {
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(
                 AutoConstants.kMaxSpeedMetersPerSecond,
                 AutoConstants.kMaxAccelerationMetersPerSecondSquared)
             // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(DriveConstants.kDriveKinematics);
+            .setKinematics(DriveConstants.kDriveKinematics)
+            .setReversed(true);
 
     // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory =
         TrajectoryGenerator.generateTrajectory(
             // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
+            new Pose2d(0, 0, new Rotation2d(Math.PI)),
             // interior waypoints are apparently required
-            List.of(new Translation2d(1, 0), new Translation2d(2, 0)),  // assuming distance is at least .2, or this doesn't make sense
+            List.of(new Translation2d(.5, 0), new Translation2d(1, 0)),  // assuming distance is at least .2, or this doesn't make sense
             // End x meters straight ahead of where we started, facing forward
-            new Pose2d(distance, 0, new Rotation2d(0)),
+            new Pose2d(2, 0, new Rotation2d(Math.PI)),
             config);
+
+    
 
     var thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
