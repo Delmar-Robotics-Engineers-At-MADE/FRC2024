@@ -25,6 +25,7 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
 
   private static boolean m_shuffleboardLoaded = false;
   private PhotonApril m_photon;
+  private DriveSubsystem m_drive;
 
   // constructor
   public DistanceToAprilTag(double distance, PhotonApril photon, DriveSubsystem drive) {
@@ -40,6 +41,7 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
         drive);
 
     m_photon = photon;
+    m_drive = drive;
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
@@ -65,7 +67,11 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
   @Override
   public boolean isFinished() {
     // End when the controller is at the reference.
-    return getController().atGoal() && m_photon.hasTarget() ; // end if we are at goal; keep trying if no target
+    boolean result = getController().atGoal() && m_photon.hasTarget() ; // end if we are at goal; keep trying if no target
+    if (result) {
+      m_drive.drive(0, 0, 0, false, true);
+    }
+    return result;
   }
 
 }

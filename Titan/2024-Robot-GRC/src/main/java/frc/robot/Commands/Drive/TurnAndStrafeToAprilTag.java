@@ -42,6 +42,7 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
 
   private static boolean m_shuffleboardLoaded = false;
   private PhotonApril m_photonApril;
+  private DriveSubsystem m_drive;
 
   // constructor
   public TurnAndStrafeToAprilTag(PhotonApril photon, DriveSubsystem drive) {
@@ -57,6 +58,7 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
         drive);
 
         m_photonApril = photon;
+        m_drive = drive;
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
@@ -87,7 +89,11 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
   @Override
   public boolean isFinished() {
     // End when the controller is at the reference.
-    return (getController1().atGoal() && getController2().atGoal()) && m_photonApril.hasTarget(); // end if we are at goal; keep trying if no target
+    boolean result = (getController1().atGoal() && getController2().atGoal()) && m_photonApril.hasTarget(); // end if we are at goal; keep trying if no target
+    if (result){
+      m_drive.drive(0, 0, 0, false, true);
+    }
+    return result;
   }
 
 }

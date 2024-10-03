@@ -94,7 +94,7 @@ public final class Constants {
     public static final double kSkewAprilZero = Math.PI;  
 
     // distance to April Tag
-    public static final double kDriveAprilP = 1;
+    public static final double kDriveAprilP = .8;
     public static final double kDriveAprilI = 0.0;
     public static final double kDriveAprilD = 0.1;
     public static final double kDriveAprilToleranceDist = 0.2;  // in meters

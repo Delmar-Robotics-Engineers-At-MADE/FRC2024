@@ -339,9 +339,9 @@ public class DriveSubsystem extends SubsystemBase {
             // Start at the origin facing the +X direction
             new Pose2d(0, 0, new Rotation2d(Math.PI)),
             // interior waypoints are apparently required
-            List.of(new Translation2d(.5, 0), new Translation2d(1, 0)),  // assuming distance is at least .2, or this doesn't make sense
+            List.of(new Translation2d(.5, .1), new Translation2d(1, .2)),  // assuming distance is at least .2, or this doesn't make sense
             // End x meters straight ahead of where we started, facing forward
-            new Pose2d(2, 0, new Rotation2d(Math.PI)),
+            new Pose2d(1.2, .3, new Rotation2d(Math.PI)),
             config);
 
     
@@ -356,8 +356,8 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.kDriveKinematics,
 
         // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
+        new PIDController(AutoConstants.kPXController*.3, 0, 0), 
+        new PIDController(AutoConstants.kPYController*.3, 0, 0),
         thetaController,
         this::setModuleStates,
         this);

@@ -341,15 +341,31 @@ public class RobotContainer {
 //    c1.myLeftTriggerLight().whileTrue(new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive));
 //     c1.myLeftTriggerLight().whileTrue(new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive));
     c0.myRightTriggerLight().whileTrue(new SequentialCommandGroup(
-      // new TurnToAprilTag(m_photonApril, m_robotDrive),
-      // new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
-      // new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive),
-      // new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
-      m_robotDrive.getDriveStraightCommand()
-      // new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
-    ));
+      new TurnToAprilTag(m_photonApril, m_robotDrive),
+      new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
+      new ParallelCommandGroup(
+        new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive),
+        new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
+      ),
+      // new ParallelCommandGroup(
+      //   new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
+      //   new HoldArm(m_arm)
+      // ),
+      Toolkit.sout("Driving straight"),
+      new ParallelCommandGroup(
+        new HoldArm(m_arm),
+        new AccelerateShooter(m_shooter, ShooterConstants.kAmpSpeed),
+        m_robotDrive.getDriveStraightCommand()
+      ),
+      Toolkit.sout("Drive straight done, should be shooting"),
+      new ParallelCommandGroup(
+        new HoldArm(m_arm),
+        new WaitCommand(ShooterConstants.kLaunchTime),
+        new RunShooterEternal(m_shooter, ShooterConstants.kAmpSpeed, true),
+        new Feed(m_intake)
+    ))); 
 
-    c0.myRightTriggerHeavy().or(c1.myRightTriggerHeavy()).whileTrue(new ParallelCommandGroup(
+    /*c0.myRightTriggerHeavy().or(*/c1.myRightTriggerHeavy().whileTrue(new ParallelCommandGroup(
       m_intake.feed()
     ));
     c0.myB().or(c1.myB()).whileTrue(fireShuttle());
