@@ -43,9 +43,10 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
   private static boolean m_shuffleboardLoaded = false;
   private PhotonApril m_photonApril;
   private DriveSubsystem m_drive;
+  private int m_tagNum;
 
   // constructor
-  public TurnAndStrafeToAprilTag(PhotonApril photon, DriveSubsystem drive) {
+  public TurnAndStrafeToAprilTag(int tagNum, PhotonApril photon, DriveSubsystem drive) {
     super(
         m_PID1, m_PID2,
         // Close loop on heading and distance
@@ -59,6 +60,7 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
 
         m_photonApril = photon;
         m_drive = drive;
+        m_tagNum = tagNum;
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
@@ -80,9 +82,9 @@ public class TurnAndStrafeToAprilTag extends ProfiledDoublePIDCommand {
 
   @Override
   public void execute() {
-    m_photonApril.updateBestTag();
-    System.out.println("turn to april error: " + m_PID1.getPositionError());
-    System.out.println("strafe to april error: " + m_PID2.getPositionError());
+    m_photonApril.updateBestTag(m_tagNum);
+    // System.out.println("turn to april error: " + m_PID1.getPositionError());
+    // System.out.println("strafe to april error: " + m_PID2.getPositionError());
     super.execute();
   }  
 

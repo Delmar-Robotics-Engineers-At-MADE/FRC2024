@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -82,6 +84,7 @@ public class RobotContainer {
 
   private final Dashboard dashboard;
 
+  private final Alliance m_allianceColor = DriverStation.getAlliance().get();
 
   private boolean override = false;
 
@@ -254,10 +257,10 @@ public class RobotContainer {
     c1.leftBumper().debounce(0.1).whileTrue(
     new RunCommand(
       () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(c1.getRightY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(c1.getLeftX()*DriverConstants.kMYawSpeed, 0.05),
-        true,true), m_robotDrive));
+          -MathUtil.applyDeadband(c1.getLeftY()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getLeftX()*DriverConstants.kManoeuvreSpeed, OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(c1.getRightX()*DriverConstants.kMYawSpeed, 0.05),
+        false,true), m_robotDrive));
 
     c0.leftStick().whileTrue(
       new RunCommand(
@@ -341,15 +344,15 @@ public class RobotContainer {
 //    c1.myLeftTriggerLight().whileTrue(new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive));
 //     c1.myLeftTriggerLight().whileTrue(new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive));
     c0.myRightTriggerLight().whileTrue(new SequentialCommandGroup(
-      new TurnToAprilTag(m_photonApril, m_robotDrive),
+      new TurnToAprilTag(m_allianceColor == Alliance.Red ? 5: 6, m_photonApril, m_robotDrive),
       new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
       new ParallelCommandGroup(
-        new TurnAndStrafeToAprilTag (m_photonApril, m_robotDrive),
+        new TurnAndStrafeToAprilTag (m_allianceColor == Alliance.Red ? 5: 6, m_photonApril, m_robotDrive),
         new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
       ),
       // new ParallelCommandGroup(
       //   new DistanceToAprilTag (DriveConstants.kDriveAprilTarget, m_photonApril, m_robotDrive),
-      //   new HoldArm(m_arm)
+      //   new RunArmClosedLoop(m_arm, ArmConstants.kBackAmpPos)
       // ),
       Toolkit.sout("Driving straight"),
       new ParallelCommandGroup(

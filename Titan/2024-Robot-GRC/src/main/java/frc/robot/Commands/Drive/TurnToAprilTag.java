@@ -25,9 +25,10 @@ public class TurnToAprilTag extends ProfiledPIDCommand {
 
   private static boolean m_shuffleboardLoaded = false;
   private PhotonApril m_photon;
+  private int m_tagNum;
 
   // constructor
-  public TurnToAprilTag(PhotonApril photon, DriveSubsystem drive) {
+  public TurnToAprilTag(int tagNum, PhotonApril photon, DriveSubsystem drive) {
     super(
         m_PID,
         // Close loop on vision target
@@ -40,6 +41,7 @@ public class TurnToAprilTag extends ProfiledPIDCommand {
         drive);
 
     m_photon = photon;
+    m_tagNum = tagNum;
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
@@ -58,8 +60,8 @@ public class TurnToAprilTag extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
-    m_photon.updateBestTag();
-    System.out.println("just turn to april error: " + m_PID.getPositionError());
+    m_photon.updateBestTag(m_tagNum);
+    // System.out.println("just turn to april error: " + m_PID.getPositionError());
     super.execute();
   }  
 

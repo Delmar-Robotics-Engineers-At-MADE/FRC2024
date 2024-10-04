@@ -60,7 +60,7 @@ public class DistanceToAprilTag extends ProfiledPIDCommand {
   @Override
   public void execute() {
     m_photon.updateBestTag();
-    System.out.println("distance to april error: " + m_PID.getPositionError());
+    // System.out.println("distance to april error: " + m_PID.getPositionError());
     super.execute();
   }  
 

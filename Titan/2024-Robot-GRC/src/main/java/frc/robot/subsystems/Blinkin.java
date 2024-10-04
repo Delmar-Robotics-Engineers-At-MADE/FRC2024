@@ -37,7 +37,7 @@ public class Blinkin extends SubsystemBase {
   }
 
   public void setColour(double input) {
-    System.out.println("Blinkin setting color to: " + input);
+    // System.out.println("Blinkin setting color to: " + input);
     one.set(input);
     two.set(input);
   }
